@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   CButton,
@@ -12,11 +12,37 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
+  // Estados para las modales
+  const [visibleResetPassword, setVisibleResetPassword] = useState(false)
+  const [visibleSuccessModal, setVisibleSuccessModal] = useState(false) // Nueva modal de éxito
+  const [email, setEmail] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [step, setStep] = useState(1)
+
+  // Manejadores de eventos
+  const handleSendCode = () => {
+    console.log(`Código enviado a: ${email}`)
+    setStep(2)
+  }
+
+  const handleResetPassword = () => {
+    console.log(`Nueva contraseña para ${email}: ${newPassword}`)
+    setVisibleResetPassword(false) // Cierra la modal de restablecimiento
+    setVisibleSuccessModal(true) // Abre la modal de éxito
+    setStep(1) // Reiniciar el flujo de pasos
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
@@ -55,7 +81,11 @@ const Login = () => {
                         </Link>
                       </CCol>
                       <CCol xs={6} className="text-right">
-                        <CButton color="link" className="px-0">
+                        <CButton
+                          color="link"
+                          className="px-0"
+                          onClick={() => setVisibleResetPassword(true)}
+                        >
                           Forgot password?
                         </CButton>
                       </CCol>
@@ -82,6 +112,84 @@ const Login = () => {
             </CCardGroup>
           </CCol>
         </CRow>
+
+        {/* Modal para restablecimiento de contraseña */}
+        <CModal
+          visible={visibleResetPassword}
+          onClose={() => {
+            setVisibleResetPassword(false)
+            setStep(1)
+          }}
+        >
+          <CModalHeader>
+            <CModalTitle>Reset Password</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            {step === 1 && (
+              <>
+                <p>Enter your email to receive a verification code.</p>
+                <CFormInput
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="mb-3"
+                />
+                <CButton color="primary" onClick={handleSendCode}>
+                  Send Verification Code
+                </CButton>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <p>Enter the verification code and your new password.</p>
+                <CFormInput
+                  type="text"
+                  placeholder="Verification Code"
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  className="mb-3"
+                />
+                <CFormInput
+                  type="password"
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="mb-3"
+                />
+                <CButton color="primary" onClick={handleResetPassword}>
+                  Reset Password
+                </CButton>
+              </>
+            )}
+          </CModalBody>
+          <CModalFooter>
+            <CButton
+              color="secondary"
+              onClick={() => {
+                setVisibleResetPassword(false)
+                setStep(1)
+              }}
+            >
+              Cancel
+            </CButton>
+          </CModalFooter>
+        </CModal>
+
+        {/* Modal de confirmación de cambio de contraseña */}
+        <CModal visible={visibleSuccessModal} onClose={() => setVisibleSuccessModal(false)}>
+          <CModalHeader>
+            <CModalTitle>Password Changed</CModalTitle>
+          </CModalHeader>
+          <CModalBody>
+            <p>Your password has been successfully changed!</p>
+          </CModalBody>
+          <CModalFooter>
+            <CButton color="primary" onClick={() => setVisibleSuccessModal(false)}>
+              Close
+            </CButton>
+          </CModalFooter>
+        </CModal>
       </CContainer>
     </div>
   )

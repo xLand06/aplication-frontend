@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   CCard,
   CButton,
@@ -51,7 +51,7 @@ export const UserList = () => {
     },
   ]
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = users.filter(() => {
     return (
       user.firstName.toLowerCase().includes(filterName.toLowerCase()) &&
       user.userId.includes(filterId) &&
@@ -140,8 +140,8 @@ export const UserList = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setSelectedUser(user)
-                      setVisibleDelete(true)
+                      setSelectedUser()
+                      setVisibleDelete(false)
                     }}
                   >
                     Delete
@@ -154,7 +154,7 @@ export const UserList = () => {
 
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
-            <CModalTitle>Add User</CModalTitle>
+            <>Add User</>
           </CModalHeader>
           <CModalBody>
             <CFormInput placeholder="First Name" className="mb-3" />
@@ -168,7 +168,7 @@ export const UserList = () => {
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="primary" onClick={() => setVisibleAdd(false)}>
+            <CButton color="primary" onClick={() => {}}>
               Save
             </CButton>
           </CModalFooter>

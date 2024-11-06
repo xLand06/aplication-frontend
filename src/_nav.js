@@ -31,7 +31,7 @@ const _nav = [
     icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
     badge: {
       color: 'info',
-      text: 'STADISTC',
+      text: 'Statitics',
     },
   },
   {
@@ -53,7 +53,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Repairs',
-    to: 'Repairs',
+    to: '/',
     icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
   },
   {

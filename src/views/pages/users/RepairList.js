@@ -30,19 +30,7 @@ export const RepairList = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedRepair, setSelectedRepair] = useState(null)
-  const [repairs, setRepairs] = useState([
-    {
-      repairId: '001',
-      model: 'Galaxy S21',
-      clientName: 'Santiago',
-      brand: 'Samsung',
-      service: 'Pantalla rota',
-      technician: 'Luis',
-      price: 120,
-      status: 'En proceso',
-      password: '1234',
-    },
-  ])
+  const [repairs, setRepairs] = useState([])
 
   const filteredRepairs = repairs.filter((repair) => {
     return (
@@ -53,13 +41,13 @@ export const RepairList = () => {
   })
 
   const handleDelete = () => {
-    setRepairs(repairs.filter((repair) => repair.repairId !== selectedRepair.repairId))
+    setRepairs(repairs.filter(() => repair.repairId !== selectedRepair.repairId))
     setVisibleDelete(false)
     setSelectedRepair(null)
   }
 
   const handleEdit = () => {
-    setVisibleEdit(false)
+    setVisibleEdit(true)
     setSelectedRepair(null)
   }
 

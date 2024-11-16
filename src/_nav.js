@@ -53,7 +53,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Repairs',
-    to: '/',
+    to: 'repairs', // cambio de ruta
     icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
   },
   {

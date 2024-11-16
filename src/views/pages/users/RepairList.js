@@ -30,7 +30,19 @@ export const RepairList = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedRepair, setSelectedRepair] = useState(null)
-  const [repairs, setRepairs] = useState([])
+  const [repairs, setRepairs] = useState([
+    {
+      repairId: '001',
+      model: 'Galaxy S21',
+      clientName: 'Santiago',
+      brand: 'Samsung',
+      service: 'Pantalla rota',
+      technician: 'Luis',
+      price: 120,
+      status: 'En proceso',
+      password: '1234',
+    }, // No se podia visualizar
+  ])
 
   const filteredRepairs = repairs.filter((repair) => {
     return (
@@ -39,21 +51,6 @@ export const RepairList = () => {
       repair.clientName.toLowerCase().includes(filterName.toLowerCase())
     )
   })
-
-  const handleDelete = () => {
-    setRepairs(repairs.filter(() => repair.repairId !== selectedRepair.repairId))
-    setVisibleDelete(false)
-    setSelectedRepair(null)
-  }
-
-  const handleEdit = () => {
-    setVisibleEdit(true)
-    setSelectedRepair(null)
-  }
-
-  const handleAdd = () => {
-    setVisibleAdd(false)
-  }
 
   return (
     <CCard className="mb-4">

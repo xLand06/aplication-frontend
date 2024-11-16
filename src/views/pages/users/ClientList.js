@@ -72,7 +72,7 @@ export const ClientList = () => {
               />
             </CCol>
             <CCol md={3}>
-              <CButton color="primary" onClick={() => setVisibleAdd(true)}>
+              <CButton color="info" onClick={() => setVisibleAdd(true)}>
                 Add Client
               </CButton>
             </CCol>
@@ -146,7 +146,7 @@ export const ClientList = () => {
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="primary" onClick={() => setVisibleAdd(false)}>
+            <CButton color="info" onClick={() => setVisibleAdd(false)}>
               Save
             </CButton>
           </CModalFooter>
@@ -184,7 +184,7 @@ export const ClientList = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="primary" onClick={() => setVisibleEdit(false)}>
+            <CButton color="info" onClick={() => setVisibleEdit(false)}>
               Save
             </CButton>
           </CModalFooter>

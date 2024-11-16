@@ -41,7 +41,7 @@ export const RepairList = () => {
       price: 120,
       status: 'En proceso',
       password: '1234',
-    }, // No se podia visualizar
+    },
   ])
 
   const filteredRepairs = repairs.filter((repair) => {
@@ -51,6 +51,21 @@ export const RepairList = () => {
       repair.clientName.toLowerCase().includes(filterName.toLowerCase())
     )
   })
+
+  const handleDelete = () => {
+    setRepairs(repairs.filter((repair) => repair.repairId !== selectedRepair.repairId))
+    setVisibleDelete(false)
+    setSelectedRepair(null)
+  }
+
+  const handleEdit = () => {
+    setVisibleEdit(false)
+    setSelectedRepair(null)
+  }
+
+  const handleAdd = () => {
+    setVisibleAdd(false)
+  }
 
   return (
     <CCard className="mb-4">
@@ -85,7 +100,7 @@ export const RepairList = () => {
               />
             </CCol>
             <CCol md={3}>
-              <CButton color="primary" onClick={() => setVisibleAdd(true)}>
+              <CButton color="info" onClick={() => setVisibleAdd(true)}>
                 Add Repair
               </CButton>
             </CCol>
@@ -179,7 +194,7 @@ export const RepairList = () => {
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="primary" onClick={handleAdd}>
+            <CButton color="info" onClick={handleAdd}>
               Save
             </CButton>
           </CModalFooter>
@@ -227,7 +242,7 @@ export const RepairList = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="primary" onClick={handleEdit}>
+            <CButton color="info" onClick={handleEdit}>
               Save
             </CButton>
           </CModalFooter>

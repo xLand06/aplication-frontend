@@ -1,11 +1,14 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
 import {
+  cibPaypal,
   cilBell,
   cilCalculator,
+  cilChart,
   cilChartPie,
   cilClipboard,
   cilCog,
+  cilCreditCard,
   cilCursor,
   cilDescription,
   cilDrop,
@@ -27,11 +30,11 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Dashboard',
-    to: '/dashboard',
-    icon: <CIcon icon={cilHome} customClassName="nav-icon" />,
+    to: 'Dashboard',
+    icon: <CIcon icon={cilChart} customClassName="nav-icon" />,
     badge: {
       color: 'info',
-      text: 'Statitics',
+      text: 'STATISTICS',
     },
   },
   {
@@ -53,8 +56,14 @@ const _nav = [
   {
     component: CNavItem,
     name: 'Repairs',
-    to: 'repairs', // cambio de ruta
+    to: 'Repairs',
     icon: <CIcon icon={cilCog} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Payments',
+    to: 'Payments',
+    icon: <CIcon icon={cilCreditCard} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -67,29 +76,6 @@ const _nav = [
     name: 'Inventory',
     to: 'Inventory',
     icon: <CIcon icon={cilMobile} customClassName="nav-icon" />,
-  },
-
-  {
-    component: CNavTitle,
-    name: 'Extras',
-  },
-
-  {
-    component: CNavGroup,
-    name: 'Pages',
-    icon: <CIcon icon={cilStarHalf} customClassName="nav-icon" />,
-    items: [
-      {
-        component: CNavItem,
-        name: 'Login',
-        to: '/login',
-      },
-      {
-        component: CNavItem,
-        name: 'Register',
-        to: '/register',
-      },
-    ],
   },
 ]
 

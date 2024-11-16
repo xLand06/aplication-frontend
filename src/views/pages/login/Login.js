@@ -22,15 +22,13 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
 const Login = () => {
-  // Estados para las modales
   const [visibleResetPassword, setVisibleResetPassword] = useState(false)
-  const [visibleSuccessModal, setVisibleSuccessModal] = useState(false) // Nueva modal de éxito
-  const [email, setEmail] = useState('')
+  const [visibleSuccessModal, setVisibleSuccessModal] = useState(false)
   const [verificationCode, setVerificationCode] = useState('')
+  const [email, setEmail] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [step, setStep] = useState(1)
 
-  // Manejadores de eventos
   const handleSendCode = () => {
     console.log(`Código enviado a: ${email}`)
     setStep(2)
@@ -38,9 +36,9 @@ const Login = () => {
 
   const handleResetPassword = () => {
     console.log(`Nueva contraseña para ${email}: ${newPassword}`)
-    setVisibleResetPassword(false) // Cierra la modal de restablecimiento
-    setVisibleSuccessModal(true) // Abre la modal de éxito
-    setStep(1) // Reiniciar el flujo de pasos
+    setVisibleResetPassword(false)
+    setVisibleSuccessModal(true)
+    setStep(1)
   }
 
   return (
@@ -75,15 +73,15 @@ const Login = () => {
                     <CRow>
                       <CCol xs={6}>
                         <Link to="/Home">
-                          <CButton color="primary" className="px-4">
-                            Login
+                          <CButton color="info" className="px-3">
+                            Log in
                           </CButton>
                         </Link>
                       </CCol>
                       <CCol xs={6} className="text-right">
                         <CButton
-                          color="link"
-                          className="px-0"
+                          color="dark"
+                          className="px-1"
                           onClick={() => setVisibleResetPassword(true)}
                         >
                           Forgot password?
@@ -93,16 +91,16 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
+              <CCard className="text-white bg-info py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
-                    <h2>Sign up</h2>
+                    <h2 className="text-white">Sign up</h2>
                     <p>
                       Sign up and bring your device back to life. Fast and reliable repairs within
                       the reach of a click.
                     </p>
                     <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>
+                      <CButton color="light" className="mt-3" active tabIndex={-1}>
                         Register Now!
                       </CButton>
                     </Link>
@@ -113,7 +111,6 @@ const Login = () => {
           </CCol>
         </CRow>
 
-        {/* Modal para restablecimiento de contraseña */}
         <CModal
           visible={visibleResetPassword}
           onClose={() => {
@@ -135,7 +132,7 @@ const Login = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="mb-3"
                 />
-                <CButton color="primary" onClick={handleSendCode}>
+                <CButton color="info" onClick={handleSendCode}>
                   Send Verification Code
                 </CButton>
               </>
@@ -157,7 +154,7 @@ const Login = () => {
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="mb-3"
                 />
-                <CButton color="primary" onClick={handleResetPassword}>
+                <CButton color="info" onClick={handleResetPassword}>
                   Reset Password
                 </CButton>
               </>
@@ -165,7 +162,7 @@ const Login = () => {
           </CModalBody>
           <CModalFooter>
             <CButton
-              color="secondary"
+              color="dark"
               onClick={() => {
                 setVisibleResetPassword(false)
                 setStep(1)
@@ -176,7 +173,8 @@ const Login = () => {
           </CModalFooter>
         </CModal>
 
-        {/* Modal de confirmación de cambio de contraseña */}
+        <CModal visible={visibleSuccessModal}></CModal>
+
         <CModal visible={visibleSuccessModal} onClose={() => setVisibleSuccessModal(false)}>
           <CModalHeader>
             <CModalTitle>Password Changed</CModalTitle>
@@ -185,7 +183,7 @@ const Login = () => {
             <p>Your password has been successfully changed!</p>
           </CModalBody>
           <CModalFooter>
-            <CButton color="primary" onClick={() => setVisibleSuccessModal(false)}>
+            <CButton color="dark" onClick={() => setVisibleSuccessModal(false)}>
               Close
             </CButton>
           </CModalFooter>

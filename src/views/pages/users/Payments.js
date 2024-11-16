@@ -21,44 +21,35 @@ import {
   CModalTitle,
 } from '@coreui/react'
 
-export const Inventory = () => {
-  const [filterName, setFilterName] = useState('')
-  const [filterId, setFilterId] = useState('')
-  const [filterPartType, setFilterPartType] = useState('')
+export const Payments = () => {
+  const [filterClient, setFilterClient] = useState('')
+  const [filterReference, setFilterReference] = useState('')
   const [visibleAdd, setVisibleAdd] = useState(false)
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [selectedPayment, setSelectedPayment] = useState(null)
 
-  const inventoryItems = [
+  const payments = [
     {
-      modelName: 'iPhone 11',
-      itemId: '001',
-      partType: 'Pantalla',
-      quantity: 15,
-      supplier: 'Canguro',
-    },
-    {
-      modelName: 'Samsung S20',
-      itemId: '002',
-      partType: 'Bateria',
-      quantity: 20,
-      supplier: 'TecnoPro',
+      clientName: 'Santiago',
+      paymentId: '001',
+      referenceNumber: 'REF001',
+      amount: 120,
+      date: '2024-11-14',
     },
   ]
 
-  const filteredInventory = inventoryItems.filter((item) => {
+  const filteredPayments = payments.filter((payment) => {
     return (
-      item.modelName.toLowerCase().includes(filterName.toLowerCase()) &&
-      item.itemId.includes(filterId) &&
-      item.partType.toLowerCase().includes(filterPartType.toLowerCase())
+      payment.clientName.toLowerCase().includes(filterClient.toLowerCase()) &&
+      payment.referenceNumber.includes(filterReference)
     )
   })
 
   return (
     <CCard className="mb-4">
       <CCardHeader>
-        <h4 className="mb-0">Inventory</h4>
+        <h4 className="mb-0">Payments</h4>
       </CCardHeader>
       <CCardBody>
         <CForm className="mb-4">
@@ -66,30 +57,22 @@ export const Inventory = () => {
             <CCol md={3}>
               <CFormInput
                 type="text"
-                placeholder="Filter by Model Name"
-                value={filterName}
-                onChange={(e) => setFilterName(e.target.value)}
+                placeholder="Filter by Client Name"
+                value={filterClient}
+                onChange={(e) => setFilterClient(e.target.value)}
               />
             </CCol>
             <CCol md={3}>
               <CFormInput
                 type="text"
-                placeholder="Filter by ID"
-                value={filterId}
-                onChange={(e) => setFilterId(e.target.value)}
-              />
-            </CCol>
-            <CCol md={3}>
-              <CFormInput
-                type="text"
-                placeholder="Filter by Part Type"
-                value={filterPartType}
-                onChange={(e) => setFilterPartType(e.target.value)}
+                placeholder="Filter by Reference Number"
+                value={filterReference}
+                onChange={(e) => setFilterReference(e.target.value)}
               />
             </CCol>
             <CCol md={3}>
               <CButton color="info" onClick={() => setVisibleAdd(true)}>
-                Add Item
+                Add Payment
               </CButton>
             </CCol>
           </CRow>
@@ -98,29 +81,29 @@ export const Inventory = () => {
         <CTable hover responsive className="mt-4">
           <CTableHead>
             <CTableRow>
-              <CTableHeaderCell>Model Name</CTableHeaderCell>
-              <CTableHeaderCell>Item ID</CTableHeaderCell>
-              <CTableHeaderCell>Part Type</CTableHeaderCell>
-              <CTableHeaderCell>Quantity</CTableHeaderCell>
-              <CTableHeaderCell>Supplier</CTableHeaderCell>
+              <CTableHeaderCell>Client Name</CTableHeaderCell>
+              <CTableHeaderCell>Payment ID</CTableHeaderCell>
+              <CTableHeaderCell>Reference Number</CTableHeaderCell>
+              <CTableHeaderCell>Amount</CTableHeaderCell>
+              <CTableHeaderCell>Date</CTableHeaderCell>
               <CTableHeaderCell>Actions</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {filteredInventory.map((item, index) => (
+            {filteredPayments.map((payment, index) => (
               <CTableRow key={index}>
-                <CTableDataCell>{item.modelName}</CTableDataCell>
-                <CTableDataCell>{item.itemId}</CTableDataCell>
-                <CTableDataCell>{item.partType}</CTableDataCell>
-                <CTableDataCell>{item.quantity}</CTableDataCell>
-                <CTableDataCell>{item.supplier}</CTableDataCell>
+                <CTableDataCell>{payment.clientName}</CTableDataCell>
+                <CTableDataCell>{payment.paymentId}</CTableDataCell>
+                <CTableDataCell>{payment.referenceNumber}</CTableDataCell>
+                <CTableDataCell>${payment.amount}</CTableDataCell>
+                <CTableDataCell>{payment.date}</CTableDataCell>
                 <CTableDataCell>
                   <CButton
                     color="info"
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setSelectedItem(item)
+                      setSelectedPayment(payment)
                       setVisibleEdit(true)
                     }}
                     className="me-2"
@@ -132,7 +115,7 @@ export const Inventory = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setSelectedItem(item)
+                      setSelectedPayment(payment)
                       setVisibleDelete(true)
                     }}
                   >
@@ -146,14 +129,14 @@ export const Inventory = () => {
 
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
-            <CModalTitle>Add Inventory Item</CModalTitle>
+            <CModalTitle>Add Payment</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="Model Name" className="mb-3" />
-            <CFormInput placeholder="Item ID" className="mb-3" />
-            <CFormInput placeholder="Part Type" className="mb-3" />
-            <CFormInput placeholder="Quantity" type="number" className="mb-3" />
-            <CFormInput placeholder="Supplier" className="mb-3" />
+            <CFormInput placeholder="Client Name" className="mb-3" />
+            <CFormInput placeholder="Payment ID" className="mb-3" />
+            <CFormInput placeholder="Reference Number" className="mb-3" />
+            <CFormInput placeholder="Amount" type="number" className="mb-3" />
+            <CFormInput placeholder="Date" type="date" className="mb-3" />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
@@ -167,33 +150,34 @@ export const Inventory = () => {
 
         <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
           <CModalHeader>
-            <CModalTitle>Edit Inventory Item</CModalTitle>
+            <CModalTitle>Edit Payment</CModalTitle>
           </CModalHeader>
           <CModalBody>
             <CFormInput
-              placeholder="Model Name"
-              defaultValue={selectedItem?.modelName}
+              placeholder="Client Name"
+              defaultValue={selectedPayment?.clientName}
               className="mb-3"
             />
             <CFormInput
-              placeholder="Item ID"
-              defaultValue={selectedItem?.itemId}
+              placeholder="Payment ID"
+              defaultValue={selectedPayment?.paymentId}
               className="mb-3"
             />
             <CFormInput
-              placeholder="Part Type"
-              defaultValue={selectedItem?.partType}
+              placeholder="Reference Number"
+              defaultValue={selectedPayment?.referenceNumber}
               className="mb-3"
             />
             <CFormInput
-              placeholder="Quantity"
+              placeholder="Amount"
               type="number"
-              defaultValue={selectedItem?.quantity}
+              defaultValue={selectedPayment?.amount}
               className="mb-3"
             />
             <CFormInput
-              placeholder="Supplier"
-              defaultValue={selectedItem?.supplier}
+              placeholder="Date"
+              type="date"
+              defaultValue={selectedPayment?.date}
               className="mb-3"
             />
           </CModalBody>
@@ -209,9 +193,11 @@ export const Inventory = () => {
 
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
-            <CModalTitle>Delete Inventory Item</CModalTitle>
+            <CModalTitle>Delete Payment</CModalTitle>
           </CModalHeader>
-          <CModalBody>Are you sure you want to delete {selectedItem?.modelName}?</CModalBody>
+          <CModalBody>
+            Are you sure you want to delete the payment made by {selectedPayment?.clientName}?
+          </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
@@ -226,4 +212,4 @@ export const Inventory = () => {
   )
 }
 
-export default Inventory
+export default Payments

@@ -11,7 +11,6 @@ const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
   { path: '/dashboard', exact: true, name: 'dashboard' },
-
   { path: '/users', name: 'users', element: UserList },
   { path: '/clients', name: 'clients', element: ClientList },
   { path: '/repairs', name: 'repairs', element: RepairList },

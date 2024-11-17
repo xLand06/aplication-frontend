@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CCard,
   CButton,
@@ -29,27 +29,16 @@ export const UserList = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
-
-  const users = [
-    {
-      firstName: 'Luis',
-      lastName: 'Landkoer',
-      userId: '31060856',
-      email: 'angellandkoer3@gmail.com',
-      phone: '04247453502',
-      role: 'Tecnico',
-      status: 'Activo',
-    },
-    {
-      firstName: 'Ronny',
-      lastName: 'Mejia',
-      userId: '22510210',
-      email: 'ronnymejia30@gmail.com',
-      phone: '0424670678',
-      role: 'Tecnico',
-      status: 'Activo',
-    },
-  ]
+  const [users, setUsers] = useState([])
+  const [newUser, setNewUser] = useState({
+    firstName: '',
+    lastName: '',
+    userId: '',
+    email: '',
+    phone: '',
+    role: '',
+    status: '',
+  })
 
   const filteredUsers = users.filter((user) => {
     return (
@@ -57,6 +46,91 @@ export const UserList = () => {
       user.userId.includes(filterId) &&
       user.role.toLowerCase().includes(filterRole.toLowerCase())
     )
+  })
+
+  // new Promise((resolve, reject) =>{
+  //   setTimeout(() => resolve("OK"), 2000)
+  //   reject("ERRORRRRR")
+  // })
+
+  const handleAddUser = async () => {
+    setUsers([...users, newUser])
+    try {
+      await fetch('http://localhost:5000/users', {
+        method: 'POST',
+        body: JSON.stringify(newUser),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setNewUser({
+      firstName: '',
+      lastName: '',
+      userId: '',
+      email: '',
+      phone: '',
+      role: '',
+      status: '',
+    })
+
+    setVisibleAdd(false)
+  }
+
+  const handleEditUser = async () => {
+    const updatedUsers = users.map((user) =>
+      user.userId === editedUser.userId ? editedUser : user,
+    )
+
+    try {
+      await fetch(`http://localhost:5000/users/${editedUser?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(editedUser),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setUsers(updatedUsers)
+    setSelectedUser(null)
+    setVisibleEdit(false)
+  }
+
+  const handleDeleteUser = async () => {
+    const updatedUsers = users.filter((user) => user.userId !== selectedUser.userId)
+    setUsers(updatedUsers)
+    setSelectedUser(null)
+    try {
+      await fetch(`http://localhost:5000/users/${selectedUser.id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.log('Error requested: ', error)
+    }
+    setVisibleDelete(false)
+  }
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/users')
+      const data = await response.json()
+      setUsers(data)
+    } catch (error) {
+      console.error('Error fetching users:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
+  const [editedUser, setEditedUser] = useState({
+    id: '',
+    firstName: '',
+    lastName: '',
+    userId: '',
+    email: '',
+    phone: '',
+    role: '',
+    status: '',
   })
 
   return (
@@ -114,7 +188,7 @@ export const UserList = () => {
           </CTableHead>
           <CTableBody>
             {filteredUsers.map((user, index) => (
-              <CTableRow key={index}>
+              <CTableRow key={user.userId}>
                 <CTableDataCell>{user.firstName}</CTableDataCell>
                 <CTableDataCell>{user.lastName}</CTableDataCell>
                 <CTableDataCell>{user.userId}</CTableDataCell>
@@ -129,6 +203,7 @@ export const UserList = () => {
                     size="sm"
                     onClick={() => {
                       setSelectedUser(user)
+                      setEditedUser(user)
                       setVisibleEdit(true)
                     }}
                     className="me-2"
@@ -157,18 +232,59 @@ export const UserList = () => {
             <CModalTitle>Add User</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="First Name" className="mb-3" />
-            <CFormInput placeholder="Last Name" className="mb-3" />
-            <CFormInput placeholder="User ID" className="mb-3" />
-            <CFormInput placeholder="Email" className="mb-3" />
-            <CFormInput placeholder="Phone" className="mb-3" />
-            <CFormInput placeholder="Role" className="mb-3" />
+            <CFormInput
+              placeholder="First Name"
+              className="mb-3"
+              value={newUser.firstName}
+              onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
+            />
+            <CFormInput
+              placeholder="Last Name"
+              className="mb-3"
+              value={newUser.lastName}
+              onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
+            />
+            <CFormInput
+              placeholder="User ID"
+              className="mb-3"
+              value={newUser.userId}
+              onChange={(e) => setNewUser({ ...newUser, userId: e.target.value })}
+            />
+            <CFormInput
+              placeholder="Email"
+              className="mb-3"
+              value={newUser.email}
+              onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+            />
+            <CFormInput
+              placeholder="Phone"
+              className="mb-3"
+              value={newUser.phone}
+              onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+            />
+            <select
+              className="form-select mb-3"
+              value={newUser.role}
+              onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+            >
+              <option value="">Select Role</option>
+              <option value="Tecnico">Técnico</option>
+              <option value="Asistente">Asistente</option>
+            </select>
+            <select
+              className="form-select mb-3"
+              value={newUser.status}
+              onChange={(e) => setNewUser({ ...newUser, status: e.target.value })}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleAdd(false)}>
+            <CButton color="info" onClick={handleAddUser} type="submit">
               Save
             </CButton>
           </CModalFooter>
@@ -181,28 +297,51 @@ export const UserList = () => {
           <CModalBody>
             <CFormInput
               placeholder="First Name"
-              defaultValue={selectedUser?.firstName}
               className="mb-3"
+              value={editedUser.firstName}
+              onChange={(e) => setEditedUser({ ...editedUser, firstName: e.target.value })}
             />
             <CFormInput
               placeholder="Last Name"
-              defaultValue={selectedUser?.lastName}
               className="mb-3"
+              value={editedUser.lastName}
+              onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
             />
             <CFormInput
-              placeholder="User ID"
-              defaultValue={selectedUser?.userId}
+              placeholder="Email"
               className="mb-3"
+              value={editedUser.email}
+              onChange={(e) => setEditedUser({ ...editedUser, email: e.target.value })}
             />
-            <CFormInput placeholder="Email" defaultValue={selectedUser?.email} className="mb-3" />
-            <CFormInput placeholder="Phone" defaultValue={selectedUser?.phone} className="mb-3" />
-            <CFormInput placeholder="Role" defaultValue={selectedUser?.role} className="mb-3" />
+            <CFormInput
+              placeholder="Phone"
+              className="mb-3"
+              value={editedUser.phone}
+              onChange={(e) => setEditedUser({ ...editedUser, phone: e.target.value })}
+            />
+            <select
+              className="form-select mb-3"
+              value={editedUser.role}
+              onChange={(e) => setEditedUser({ ...editedUser, role: e.target.value })}
+            >
+              <option value="">Select Role</option>
+              <option value="Tecnico">Técnico</option>
+              <option value="Asistente">Asistente</option>
+            </select>
+            <select
+              className="form-select mb-3"
+              value={editedUser.status}
+              onChange={(e) => setEditedUser({ ...editedUser, status: e.target.value })}
+            >
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleEdit(false)}>
+            <CButton color="info" onClick={handleEditUser}>
               Save
             </CButton>
           </CModalFooter>
@@ -210,16 +349,23 @@ export const UserList = () => {
 
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
-            <CModalTitle>Delete User</CModalTitle>
+            <CModalTitle>Confirm Delete</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            Are you sure you want to delete {selectedUser?.firstName} {selectedUser?.lastName}?
+            {selectedUser ? (
+              <p>
+                Are you sure you want to delete the user {selectedUser.firstName}{' '}
+                {selectedUser.lastName}
+              </p>
+            ) : (
+              <p>No user selected.</p>
+            )}
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={() => setVisibleDelete(false)}>
+            <CButton color="danger" onClick={handleDeleteUser}>
               Delete
             </CButton>
           </CModalFooter>

@@ -29,8 +29,7 @@ export const Inventory = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-
-  const inventoryItems = [
+  const [inventoryItems, setInventoryItems] = useState([
     {
       modelName: 'iPhone 11',
       itemId: '001',
@@ -45,7 +44,7 @@ export const Inventory = () => {
       quantity: 20,
       supplier: 'TecnoPro',
     },
-  ]
+  ])
 
   const filteredInventory = inventoryItems.filter((item) => {
     return (
@@ -54,6 +53,25 @@ export const Inventory = () => {
       item.partType.toLowerCase().includes(filterPartType.toLowerCase())
     )
   })
+
+  const handleAddItem = (newItem) => {
+    setInventoryItems([...inventoryItems, newItem])
+    setVisibleAdd(false)
+  }
+
+  const handleEditItem = (updatedItem) => {
+    const updatedItems = inventoryItems.map((item) =>
+      item.itemId === updatedItem.itemId ? updatedItem : item,
+    )
+    setInventoryItems(updatedItems)
+    setVisibleEdit(false)
+  }
+
+  const handleDeleteItem = () => {
+    const updatedItems = inventoryItems.filter((item) => item.itemId !== selectedItem.itemId)
+    setInventoryItems(updatedItems)
+    setVisibleDelete(false)
+  }
 
   return (
     <CCard className="mb-4">
@@ -144,27 +162,41 @@ export const Inventory = () => {
           </CTableBody>
         </CTable>
 
+        {/* Add Item Modal */}
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
             <CModalTitle>Add Inventory Item</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="Model Name" className="mb-3" />
-            <CFormInput placeholder="Item ID" className="mb-3" />
-            <CFormInput placeholder="Part Type" className="mb-3" />
-            <CFormInput placeholder="Quantity" type="number" className="mb-3" />
-            <CFormInput placeholder="Supplier" className="mb-3" />
+            <CFormInput placeholder="Model Name" className="mb-3" id="addModelName" />
+            <CFormInput placeholder="Item ID" className="mb-3" id="addItemId" />
+            <CFormInput placeholder="Part Type" className="mb-3" id="addPartType" />
+            <CFormInput placeholder="Quantity" type="number" className="mb-3" id="addQuantity" />
+            <CFormInput placeholder="Supplier" className="mb-3" id="addSupplier" />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleAdd(false)}>
+            <CButton
+              color="info"
+              onClick={() => {
+                const newItem = {
+                  modelName: document.getElementById('addModelName').value,
+                  itemId: document.getElementById('addItemId').value,
+                  partType: document.getElementById('addPartType').value,
+                  quantity: Number(document.getElementById('addQuantity').value),
+                  supplier: document.getElementById('addSupplier').value,
+                }
+                handleAddItem(newItem)
+              }}
+            >
               Save
             </CButton>
           </CModalFooter>
         </CModal>
 
+        {/* Edit Item Modal */}
         <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
           <CModalHeader>
             <CModalTitle>Edit Inventory Item</CModalTitle>
@@ -174,39 +206,57 @@ export const Inventory = () => {
               placeholder="Model Name"
               defaultValue={selectedItem?.modelName}
               className="mb-3"
+              id="editModelName"
             />
             <CFormInput
               placeholder="Item ID"
               defaultValue={selectedItem?.itemId}
               className="mb-3"
+              id="editItemId"
             />
             <CFormInput
               placeholder="Part Type"
               defaultValue={selectedItem?.partType}
               className="mb-3"
+              id="editPartType"
             />
             <CFormInput
               placeholder="Quantity"
               type="number"
               defaultValue={selectedItem?.quantity}
               className="mb-3"
+              id="editQuantity"
             />
             <CFormInput
               placeholder="Supplier"
               defaultValue={selectedItem?.supplier}
               className="mb-3"
+              id="editSupplier"
             />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleEdit(false)}>
+            <CButton
+              color="info"
+              onClick={() => {
+                const updatedItem = {
+                  modelName: document.getElementById('editModelName').value,
+                  itemId: document.getElementById('editItemId').value,
+                  partType: document.getElementById('editPartType').value,
+                  quantity: Number(document.getElementById('editQuantity').value),
+                  supplier: document.getElementById('editSupplier').value,
+                }
+                handleEditItem(updatedItem)
+              }}
+            >
               Save
             </CButton>
           </CModalFooter>
         </CModal>
 
+        {/* Delete Item Modal */}
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
             <CModalTitle>Delete Inventory Item</CModalTitle>
@@ -216,7 +266,7 @@ export const Inventory = () => {
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={() => setVisibleDelete(false)}>
+            <CButton color="danger" onClick={handleDeleteItem}>
               Delete
             </CButton>
           </CModalFooter>

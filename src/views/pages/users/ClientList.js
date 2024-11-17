@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   CCard,
   CButton,
@@ -28,24 +28,86 @@ export const ClientList = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
+  const [clients, setClients] = useState([])
+  const [newClient, setNewClient] = useState({
+    firstName: '',
+    lastName: '',
+    clientId: '',
+    email: '',
+    phone: '',
+    address: '',
+  })
 
-  const clients = [
-    {
-      firstName: 'Santiago',
-      lastName: 'Devia',
-      clientId: '34521325',
-      email: 'angellandkoer6@gmail.com',
-      phone: '04124456710',
-      address: 'Avenida',
-    },
-  ]
-
-  const filteredClient = clients.filter((client) => {
+  const filteredClients = clients.filter((client) => {
     return (
       client.firstName.toLowerCase().includes(filterName.toLowerCase()) &&
       client.clientId.includes(filterId)
     )
   })
+
+  const handleAddClient = async () => {
+    setClients([...clients, newClient])
+    try {
+      await fetch('http://localhost:5000/clients', {
+        method: 'POST',
+        body: JSON.stringify(newClient),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setNewClient({
+      firstName: '',
+      lastName: '',
+      clientId: '',
+      email: '',
+      phone: '',
+      address: '',
+    })
+    setVisibleAdd(false)
+  }
+
+  const handleEditClient = async () => {
+    setClients(
+      clients.map((client) =>
+        client.clientId === selectedClient.clientId ? selectedClient : client,
+      ),
+    )
+    try {
+      await fetch(`http://localhost:5000/clients/${selectedClient?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(selectedClient),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setVisibleEdit(false)
+  }
+
+  const handleDeleteClient = async () => {
+    setClients(clients.filter((client) => client.clientId !== selectedClient.clientId))
+    setVisibleDelete(false)
+    try {
+      await fetch(`http://localhost:5000/clients/${selectedClient.id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.log('Error requested: ', error)
+    }
+  }
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/clients')
+      const data = await response.json()
+      setClients(data)
+    } catch (error) {
+      console.error('Error fetching clients:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchClients()
+  }, [])
 
   return (
     <CCard className="mb-4">
@@ -92,7 +154,7 @@ export const ClientList = () => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {filteredClient.map((client, index) => (
+            {filteredClients.map((client, index) => (
               <CTableRow key={index}>
                 <CTableDataCell>{client.firstName}</CTableDataCell>
                 <CTableDataCell>{client.lastName}</CTableDataCell>
@@ -135,18 +197,48 @@ export const ClientList = () => {
             <CModalTitle>Add Client</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="First Name" className="mb-3" />
-            <CFormInput placeholder="Last Name" className="mb-3" />
-            <CFormInput placeholder="User ID" className="mb-3" />
-            <CFormInput placeholder="Email" className="mb-3" />
-            <CFormInput placeholder="Phone" className="mb-3" />
-            <CFormInput placeholder="Address" className="mb-3" />
+            <CFormInput
+              placeholder="First Name"
+              value={newClient.firstName}
+              onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Last Name"
+              value={newClient.lastName}
+              onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Client ID"
+              value={newClient.clientId}
+              onChange={(e) => setNewClient({ ...newClient, clientId: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Email"
+              value={newClient.email}
+              onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Phone"
+              value={newClient.phone}
+              onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Address"
+              value={newClient.address}
+              onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+              className="mb-3"
+            />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleAdd(false)}>
+            <CButton color="info" onClick={handleAddClient}>
               Save
             </CButton>
           </CModalFooter>
@@ -159,24 +251,38 @@ export const ClientList = () => {
           <CModalBody>
             <CFormInput
               placeholder="First Name"
-              defaultValue={selectedClient?.firstName}
+              value={selectedClient?.firstName || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, firstName: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Last Name"
-              defaultValue={selectedClient?.lastName}
+              value={selectedClient?.lastName || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, lastName: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Client ID"
-              defaultValue={selectedClient?.clientId}
+              value={selectedClient?.clientId || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, clientId: e.target.value })}
               className="mb-3"
             />
-            <CFormInput placeholder="Email" defaultValue={selectedClient?.email} className="mb-3" />
-            <CFormInput placeholder="Phone" defaultValue={selectedClient?.phone} className="mb-3" />
+            <CFormInput
+              placeholder="Email"
+              value={selectedClient?.email || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, email: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Phone"
+              value={selectedClient?.phone || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, phone: e.target.value })}
+              className="mb-3"
+            />
             <CFormInput
               placeholder="Address"
-              defaultValue={selectedClient?.address}
+              value={selectedClient?.address || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, address: e.target.value })}
               className="mb-3"
             />
           </CModalBody>
@@ -184,7 +290,7 @@ export const ClientList = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleEdit(false)}>
+            <CButton color="info" onClick={handleEditClient}>
               Save
             </CButton>
           </CModalFooter>
@@ -201,7 +307,7 @@ export const ClientList = () => {
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={() => setVisibleDelete(false)}>
+            <CButton color="danger" onClick={handleDeleteClient}>
               Delete
             </CButton>
           </CModalFooter>

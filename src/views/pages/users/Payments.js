@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CButton,
@@ -28,16 +28,14 @@ export const Payments = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedPayment, setSelectedPayment] = useState(null)
-
-  const payments = [
-    {
-      clientName: 'Santiago',
-      paymentId: '001',
-      referenceNumber: 'REF001',
-      amount: 120,
-      date: '2024-11-14',
-    },
-  ]
+  const [payments, setPayments] = useState([])
+  const [newPayment, setNewPayment] = useState({
+    clientName: '',
+    paymentId: '',
+    referenceNumber: '',
+    amount: '',
+    date: '',
+  })
 
   const filteredPayments = payments.filter((payment) => {
     return (
@@ -45,6 +43,69 @@ export const Payments = () => {
       payment.referenceNumber.includes(filterReference)
     )
   })
+
+  const handleAddPayment = async () => {
+    setPayments([...payments, newPayment])
+    try {
+      await fetch('http://localhost:5000/payments', {
+        method: 'POST',
+        body: JSON.stringify(newPayment),
+      })
+    } catch (error) {
+      console.log('There was an error', error)
+    }
+    setNewPayment({
+      clientName: '',
+      paymentId: '',
+      referenceNumber: '',
+      amount: '',
+      date: '',
+    })
+    setVisibleAdd(false)
+  }
+
+  const handleEditPayment = async () => {
+    setPayments(
+      payments.map((payment) =>
+        payment.paymentId === selectedPayment.paymentId ? { ...selectedPayment } : payment,
+      ),
+    )
+    try {
+      await fetch(`http://localhost:5000/payments/${selectedPayment?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(selectedPayment),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setVisibleEdit(false)
+  }
+
+  const handleDeletePayment = async () => {
+    setPayments(payments.filter((payment) => payment.id !== selectedPayment.id))
+    setVisibleDelete(false)
+    try {
+      await fetch(`http://localhost:5000/payments/${selectedPayment.id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.log('Error requested: ', error)
+    }
+  }
+
+  const fetchPayments = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/payments')
+      const data = await response.json()
+      setPayments(data)
+    } catch (error) {
+      console.error('Error fetching payments:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchPayments()
+  }, [])
 
   return (
     <CCard className="mb-4">
@@ -132,17 +193,44 @@ export const Payments = () => {
             <CModalTitle>Add Payment</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="Client Name" className="mb-3" />
-            <CFormInput placeholder="Payment ID" className="mb-3" />
-            <CFormInput placeholder="Reference Number" className="mb-3" />
-            <CFormInput placeholder="Amount" type="number" className="mb-3" />
-            <CFormInput placeholder="Date" type="date" className="mb-3" />
+            <CFormInput
+              placeholder="Client Name"
+              value={newPayment.clientName}
+              onChange={(e) => setNewPayment({ ...newPayment, clientName: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Payment ID"
+              value={newPayment.paymentId}
+              onChange={(e) => setNewPayment({ ...newPayment, paymentId: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Reference Number"
+              value={newPayment.referenceNumber}
+              onChange={(e) => setNewPayment({ ...newPayment, referenceNumber: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Amount"
+              value={newPayment.amount}
+              type="number"
+              onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Date"
+              type="date"
+              value={newPayment.date}
+              onChange={(e) => setNewPayment({ ...newPayment, date: e.target.value })}
+              className="mb-3"
+            />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleAdd(false)}>
+            <CButton color="info" onClick={handleAddPayment}>
               Save
             </CButton>
           </CModalFooter>
@@ -155,29 +243,40 @@ export const Payments = () => {
           <CModalBody>
             <CFormInput
               placeholder="Client Name"
-              defaultValue={selectedPayment?.clientName}
+              value={selectedPayment?.clientName}
+              onChange={(e) =>
+                setSelectedPayment({ ...selectedPayment, clientName: e.target.value })
+              }
               className="mb-3"
             />
             <CFormInput
               placeholder="Payment ID"
-              defaultValue={selectedPayment?.paymentId}
+              value={selectedPayment?.paymentId}
+              onChange={(e) =>
+                setSelectedPayment({ ...selectedPayment, paymentId: e.target.value })
+              }
               className="mb-3"
             />
             <CFormInput
               placeholder="Reference Number"
-              defaultValue={selectedPayment?.referenceNumber}
+              value={selectedPayment?.referenceNumber}
+              onChange={(e) =>
+                setSelectedPayment({ ...selectedPayment, referenceNumber: e.target.value })
+              }
               className="mb-3"
             />
             <CFormInput
               placeholder="Amount"
+              value={selectedPayment?.amount}
               type="number"
-              defaultValue={selectedPayment?.amount}
+              onChange={(e) => setSelectedPayment({ ...selectedPayment, amount: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Date"
+              value={selectedPayment?.date}
               type="date"
-              defaultValue={selectedPayment?.date}
+              onChange={(e) => setSelectedPayment({ ...selectedPayment, date: e.target.value })}
               className="mb-3"
             />
           </CModalBody>
@@ -185,7 +284,7 @@ export const Payments = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleEdit(false)}>
+            <CButton color="info" onClick={handleEditPayment}>
               Save
             </CButton>
           </CModalFooter>
@@ -202,7 +301,7 @@ export const Payments = () => {
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={() => setVisibleDelete(false)}>
+            <CButton color="danger" onClick={handleDeletePayment}>
               Delete
             </CButton>
           </CModalFooter>

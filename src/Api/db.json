@@ -1,0 +1,77 @@
+{
+  "users": [
+    {
+      "id": "641f",
+      "firstName": "dgre",
+      "lastName": "fefe",
+      "userId": "",
+      "email": "",
+      "phone": "",
+      "role": "",
+      "status": ""
+    }
+  ],
+  "clients": [
+    {
+      "id": "1",
+      "firstName": "Luisa",
+      "lastName": "Santiago",
+      "clientId": "3431030457",
+      "email": "santiago@gmail.com",
+      "phone": "0414",
+      "address": "Avenida"
+    }
+  ],
+  "repairs": [
+    {
+      "id": "1",
+      "firstName": "Luisa",
+      "lastName": "Landkoera",
+      "userId": "31060856",
+      "email": "angellandkoer3@gmail.com",
+      "phone": "04147809010",
+      "role": "Tecnico",
+      "status": "Activo"
+    },
+    {
+      "id": "32d",
+      "repairId": "12",
+      "model": "sdds",
+      "clientName": "csdcds",
+      "brand": "cdss",
+      "service": "cscsd",
+      "technician": "cscsd",
+      "price": "1229",
+      "status": "Reparado",
+      "password": "ada"
+    }
+  ],
+  "payments": [
+    {
+      "id": "1",
+      "clientName": "pablo parra",
+      "paymentId": "203243",
+      "referenceNumber": "131313",
+      "amount": "250",
+      "date": "24-10-2024"
+    }
+  ],
+  "suppliers": [
+    {
+      "id": "2",
+      "supplierName": "Canguro",
+      "supplierId": "01",
+      "email": "canguro@gmail.com",
+      "phone": "0424789722",
+      "address": "Avenida 2"
+    },
+    {
+      "id": "548d",
+      "supplierName": "",
+      "supplierId": "",
+      "email": "",
+      "phone": "",
+      "address": ""
+    }
+  ]
+}

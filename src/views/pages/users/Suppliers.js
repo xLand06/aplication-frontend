@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CButton,
@@ -28,23 +28,15 @@ export const Suppliers = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedSupplier, setSelectedSupplier] = useState(null)
-
-  const suppliers = [
-    {
-      supplierName: 'Canguro',
-      supplierId: 'SUP001',
-      email: 'canguro@gmail.com',
-      phone: '0414-7108890',
-      address: 'Centro Cívico',
-    },
-    {
-      supplierName: 'TecnoPro',
-      supplierId: 'SUP002',
-      email: 'tecnopro@gmail.com',
-      phone: '0424-7801015',
-      address: 'Centro Cívico',
-    },
-  ]
+  const [suppliers, setSuppliers] = useState([]) // Lista de proveedores
+  const [newSupplier, setNewSupplier] = useState({
+    supplierName: '',
+    supplierId: '',
+    email: '',
+    phone: '',
+    address: '',
+  })
+  const [editSupplier, setEditSupplier] = useState(null) // Para la edición
 
   const filteredSuppliers = suppliers.filter((supplier) => {
     return (
@@ -52,6 +44,73 @@ export const Suppliers = () => {
       supplier.supplierId.includes(filterId)
     )
   })
+
+  const handleAddSupplier = async () => {
+    setSuppliers([...suppliers, newSupplier])
+    try {
+      await fetch('http://localhost:5000/suppliers', {
+        method: 'POST',
+        body: JSON.stringify(newSupplier),
+      })
+    } catch (error) {
+      console.error('There was an error:', error)
+    }
+    setNewSupplier({ supplierName: '', supplierId: '', email: '', phone: '', address: '' })
+    setVisibleAdd(false)
+  }
+
+  const handleEditSupplier = async () => {
+    const updatedSuppliers = suppliers.map((supplier) =>
+      supplier.supplierId === editSupplier.supplierId ? editSupplier : supplier,
+    )
+    setSuppliers(updatedSuppliers)
+    try {
+      await fetch(`http://localhost:5000/suppliers/${editSupplier.supplierId}`, {
+        method: 'PUT',
+        body: JSON.stringify(editSupplier),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    } catch (error) {
+      console.error('Error updating supplier:', error)
+    }
+    setVisibleEdit(false)
+  }
+
+  const handleDeleteSupplier = async () => {
+    const updatedSuppliers = suppliers.filter(
+      (supplier) => supplier.supplierId !== selectedSupplier.supplierId,
+    )
+    setSuppliers(updatedSuppliers)
+    setVisibleDelete(false)
+    try {
+      await fetch(`http://localhost:5000/suppliers/${selectedSupplier.supplierId}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.error('Error deleting supplier:', error)
+    }
+  }
+
+  const fetchSuppliers = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/suppliers')
+      if (!response.ok) throw new Error('Failed to fetch suppliers')
+      const data = await response.json()
+      setSuppliers(data)
+    } catch (error) {
+      console.error('Error fetching suppliers:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchSuppliers()
+    // Optional cleanup
+    return () => {
+      setSuppliers([])
+    }
+  }, [])
 
   return (
     <CCard className="mb-4">
@@ -97,8 +156,8 @@ export const Suppliers = () => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {filteredSuppliers.map((supplier, index) => (
-              <CTableRow key={index}>
+            {filteredSuppliers.map((supplier) => (
+              <CTableRow key={supplier.supplierId}>
                 <CTableDataCell>{supplier.supplierName}</CTableDataCell>
                 <CTableDataCell>{supplier.supplierId}</CTableDataCell>
                 <CTableDataCell>{supplier.email}</CTableDataCell>
@@ -110,7 +169,7 @@ export const Suppliers = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      setSelectedSupplier(supplier)
+                      setEditSupplier(supplier)
                       setVisibleEdit(true)
                     }}
                     className="me-2"
@@ -134,27 +193,54 @@ export const Suppliers = () => {
           </CTableBody>
         </CTable>
 
+        {/* Add Supplier Modal */}
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
             <CModalTitle>Add Supplier</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="Supplier Name" className="mb-3" />
-            <CFormInput placeholder="Supplier ID" className="mb-3" />
-            <CFormInput placeholder="Email" className="mb-3" />
-            <CFormInput placeholder="Phone" className="mb-3" />
-            <CFormInput placeholder="Address" className="mb-3" />
+            <CFormInput
+              placeholder="Supplier Name"
+              value={newSupplier.supplierName}
+              onChange={(e) => setNewSupplier({ ...newSupplier, supplierName: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Supplier ID"
+              value={newSupplier.supplierId}
+              onChange={(e) => setNewSupplier({ ...newSupplier, supplierId: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Email"
+              value={newSupplier.email}
+              onChange={(e) => setNewSupplier({ ...newSupplier, email: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Phone"
+              value={newSupplier.phone}
+              onChange={(e) => setNewSupplier({ ...newSupplier, phone: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Address"
+              value={newSupplier.address}
+              onChange={(e) => setNewSupplier({ ...newSupplier, address: e.target.value })}
+              className="mb-3"
+            />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleAdd(false)}>
+            <CButton color="info" onClick={handleAddSupplier}>
               Save
             </CButton>
           </CModalFooter>
         </CModal>
 
+        {/* Edit Supplier Modal */}
         <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
           <CModalHeader>
             <CModalTitle>Edit Supplier</CModalTitle>
@@ -162,27 +248,32 @@ export const Suppliers = () => {
           <CModalBody>
             <CFormInput
               placeholder="Supplier Name"
-              defaultValue={selectedSupplier?.supplierName}
+              value={editSupplier?.supplierName || ''}
+              onChange={(e) => setEditSupplier({ ...editSupplier, supplierName: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Supplier ID"
-              defaultValue={selectedSupplier?.supplierId}
+              value={editSupplier?.supplierId || ''}
+              onChange={(e) => setEditSupplier({ ...editSupplier, supplierId: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Email"
-              defaultValue={selectedSupplier?.email}
+              value={editSupplier?.email || ''}
+              onChange={(e) => setEditSupplier({ ...editSupplier, email: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Phone"
-              defaultValue={selectedSupplier?.phone}
+              value={editSupplier?.phone || ''}
+              onChange={(e) => setEditSupplier({ ...editSupplier, phone: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Address"
-              defaultValue={selectedSupplier?.address}
+              value={editSupplier?.address || ''}
+              onChange={(e) => setEditSupplier({ ...editSupplier, address: e.target.value })}
               className="mb-3"
             />
           </CModalBody>
@@ -190,12 +281,13 @@ export const Suppliers = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={() => setVisibleEdit(false)}>
+            <CButton color="info" onClick={handleEditSupplier}>
               Save
             </CButton>
           </CModalFooter>
         </CModal>
 
+        {/* Delete Supplier Modal */}
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
             <CModalTitle>Delete Supplier</CModalTitle>
@@ -205,7 +297,7 @@ export const Suppliers = () => {
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={() => setVisibleDelete(false)}>
+            <CButton color="danger" onClick={handleDeleteSupplier}>
               Delete
             </CButton>
           </CModalFooter>

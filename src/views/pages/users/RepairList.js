@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CButton,
@@ -30,19 +30,18 @@ export const RepairList = () => {
   const [visibleEdit, setVisibleEdit] = useState(false)
   const [visibleDelete, setVisibleDelete] = useState(false)
   const [selectedRepair, setSelectedRepair] = useState(null)
-  const [repairs, setRepairs] = useState([
-    {
-      repairId: '001',
-      model: 'Galaxy S21',
-      clientName: 'Santiago',
-      brand: 'Samsung',
-      service: 'Pantalla rota',
-      technician: 'Luis',
-      price: 120,
-      status: 'En proceso',
-      password: '1234',
-    },
-  ])
+  const [repairs, setRepairs] = useState([])
+  const [newRepair, setNewRepair] = useState({
+    repairId: '',
+    model: '',
+    clientName: '',
+    brand: '',
+    service: '',
+    technician: '',
+    price: 0,
+    status: '',
+    password: '',
+  })
 
   const filteredRepairs = repairs.filter((repair) => {
     return (
@@ -52,20 +51,73 @@ export const RepairList = () => {
     )
   })
 
-  const handleDelete = () => {
-    setRepairs(repairs.filter((repair) => repair.repairId !== selectedRepair.repairId))
-    setVisibleDelete(false)
-    setSelectedRepair(null)
+  const handleAdd = async () => {
+    setRepairs([...repairs, newRepair])
+    try {
+      await fetch('http://localhost:5000/repairs', {
+        method: 'POST',
+        body: JSON.stringify(newClient),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
+    setNewRepair({
+      repairId: '',
+      model: '',
+      clientName: '',
+      brand: '',
+      service: '',
+      technician: '',
+      price: 0,
+      status: '',
+      password: '',
+    })
+    setVisibleAdd(false)
   }
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
+    setRepairs(
+      repairs.map((repair) =>
+        repair.repairId === selectedRepair.repairId ? selectedRepair : repair,
+      ),
+    )
+    try {
+      await fetch(`http://localhost:5000/repairs/${selectedRepair?.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(selectedRepair),
+      })
+    } catch (error) {
+      console.log('There was an error:', error)
+    }
     setVisibleEdit(false)
     setSelectedRepair(null)
   }
 
-  const handleAdd = () => {
-    setVisibleAdd(false)
+  const handleDelete = async () => {
+    setRepairs(repairs.filter((repair) => repair.repairId !== selectedRepair.repairId))
+    setVisibleDelete(false)
+    try {
+      await fetch(`http://localhost:5000/repairs/${selectedRepair.id}`, {
+        method: 'DELETE',
+      })
+    } catch (error) {
+      console.log('Error requested: ', error)
+    }
+    setSelectedRepair(null)
   }
+  const fetchRepairs = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/repairs')
+      const data = await response.json()
+      setClients(data)
+    } catch (error) {
+      console.error('Error fetching repairs:', error)
+    }
+  }
+
+  useEffect(() => {
+    fetchRepairs()
+  }, [])
 
   return (
     <CCard className="mb-4">
@@ -211,6 +263,7 @@ export const RepairList = () => {
               className="mb-3"
             />
             <CFormInput placeholder="Model" defaultValue={selectedRepair?.model} className="mb-3" />
+            <CFormInput placeholder="Brand" defaultValue={selectedRepair?.brand} className="mb-3" />
             <CFormInput
               placeholder="Client Name"
               defaultValue={selectedRepair?.clientName}
@@ -228,15 +281,24 @@ export const RepairList = () => {
             />
             <CFormInput
               placeholder="Price"
-              type="number"
               defaultValue={selectedRepair?.price}
               className="mb-3"
+              type="number"
             />
-            <CFormSelect className="mb-3" defaultValue={selectedRepair?.status}>
+            <CFormSelect
+              value={selectedRepair?.status}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, status: e.target.value })}
+              className="mb-3"
+            >
               <option value="En proceso">In Progress</option>
               <option value="Reparado">Repaired</option>
               <option value="Entregado">Delivered</option>
             </CFormSelect>
+            <CFormInput
+              placeholder="Password"
+              defaultValue={selectedRepair?.password}
+              className="mb-3"
+            />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
@@ -250,11 +312,9 @@ export const RepairList = () => {
 
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
-            <CModalTitle>Confirm Delete</CModalTitle>
+            <CModalTitle>Delete Repair</CModalTitle>
           </CModalHeader>
-          <CModalBody>
-            Are you sure you want to delete the repair for {selectedRepair?.clientName}?
-          </CModalBody>
+          <CModalBody>Are you sure you want to delete this repair?</CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel

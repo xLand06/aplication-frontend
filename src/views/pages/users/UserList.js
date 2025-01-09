@@ -31,6 +31,7 @@ export const UserList = () => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [users, setUsers] = useState([])
   const [newUser, setNewUser] = useState({
+    id: '',
     firstName: '',
     lastName: '',
     userId: '',
@@ -48,22 +49,26 @@ export const UserList = () => {
     )
   })
 
-  // new Promise((resolve, reject) =>{
-  //   setTimeout(() => resolve("OK"), 2000)
-  //   reject("ERRORRRRR")
-  // })
-
   const handleAddUser = async () => {
-    setUsers([...users, newUser])
     try {
-      await fetch('http://localhost:5000/users', {
+      const response = await fetch('http://localhost:5000/users', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newUser),
       })
+
+      if (response.ok) {
+        const addedUser = await response.json()
+        setUsers([...users, addedUser])
+      } else {
+        console.log('Error al agregar el usuario:', response.statusText)
+      }
     } catch (error) {
       console.log('There was an error:', error)
     }
+
     setNewUser({
+      id: '',
       firstName: '',
       lastName: '',
       userId: '',
@@ -82,14 +87,21 @@ export const UserList = () => {
     )
 
     try {
-      await fetch(`http://localhost:5000/users/${editedUser?.id}`, {
+      const response = await fetch(`http://localhost:5000/users/${editedUser.id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editedUser),
       })
+
+      if (response.ok) {
+        setUsers(updatedUsers)
+      } else {
+        console.log('Error al editar el usuario:', response.statusText)
+      }
     } catch (error) {
       console.log('There was an error:', error)
     }
-    setUsers(updatedUsers)
+
     setSelectedUser(null)
     setVisibleEdit(false)
   }
@@ -98,13 +110,15 @@ export const UserList = () => {
     const updatedUsers = users.filter((user) => user.userId !== selectedUser.userId)
     setUsers(updatedUsers)
     setSelectedUser(null)
+
     try {
       await fetch(`http://localhost:5000/users/${selectedUser.id}`, {
         method: 'DELETE',
       })
     } catch (error) {
-      console.log('Error requested: ', error)
+      console.log('Error requesting delete: ', error)
     }
+
     setVisibleDelete(false)
   }
 
@@ -152,7 +166,7 @@ export const UserList = () => {
             <CCol md={3}>
               <CFormInput
                 type="number"
-                placeholder="Filter by ID"
+                placeholder="Filter by User ID"
                 value={filterId}
                 onChange={(e) => setFilterId(e.target.value)}
               />
@@ -176,6 +190,7 @@ export const UserList = () => {
         <CTable hover responsive className="mt-4">
           <CTableHead>
             <CTableRow>
+              <CTableHeaderCell>ID</CTableHeaderCell>
               <CTableHeaderCell>First Name</CTableHeaderCell>
               <CTableHeaderCell>Last Name</CTableHeaderCell>
               <CTableHeaderCell>User ID</CTableHeaderCell>
@@ -187,8 +202,9 @@ export const UserList = () => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {filteredUsers.map((user, index) => (
+            {filteredUsers.map((user) => (
               <CTableRow key={user.userId}>
+                <CTableDataCell>{user.id}</CTableDataCell>
                 <CTableDataCell>{user.firstName}</CTableDataCell>
                 <CTableDataCell>{user.lastName}</CTableDataCell>
                 <CTableDataCell>{user.userId}</CTableDataCell>
@@ -233,6 +249,12 @@ export const UserList = () => {
           </CModalHeader>
           <CModalBody>
             <CFormInput
+              placeholder="ID"
+              className="mb-3"
+              value={newUser.id}
+              onChange={(e) => setNewUser({ ...newUser, id: e.target.value })}
+            />
+            <CFormInput
               placeholder="First Name"
               className="mb-3"
               value={newUser.firstName}
@@ -276,6 +298,7 @@ export const UserList = () => {
               value={newUser.status}
               onChange={(e) => setNewUser({ ...newUser, status: e.target.value })}
             >
+              <option value="">Select Status</option>
               <option value="Activo">Activo</option>
               <option value="Inactivo">Inactivo</option>
             </select>
@@ -284,7 +307,7 @@ export const UserList = () => {
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={handleAddUser} type="submit">
+            <CButton color="info" onClick={handleAddUser}>
               Save
             </CButton>
           </CModalFooter>
@@ -306,6 +329,12 @@ export const UserList = () => {
               className="mb-3"
               value={editedUser.lastName}
               onChange={(e) => setEditedUser({ ...editedUser, lastName: e.target.value })}
+            />
+            <CFormInput
+              placeholder="User ID"
+              className="mb-3"
+              value={editedUser.userId}
+              onChange={(e) => setEditedUser({ ...editedUser, userId: e.target.value })}
             />
             <CFormInput
               placeholder="Email"
@@ -333,6 +362,7 @@ export const UserList = () => {
               value={editedUser.status}
               onChange={(e) => setEditedUser({ ...editedUser, status: e.target.value })}
             >
+              <option value="">Select Status</option>
               <option value="Activo">Activo</option>
               <option value="Inactivo">Inactivo</option>
             </select>

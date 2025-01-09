@@ -17,7 +17,15 @@ import { Link } from 'react-router-dom'
 
 const Register = () => {
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div
+      className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center"
+      style={{
+        backgroundImage: "url('src/assets/images/login1.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={9} lg={7} xl={6}>

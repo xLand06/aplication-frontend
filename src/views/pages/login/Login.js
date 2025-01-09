@@ -42,7 +42,15 @@ const Login = () => {
   }
 
   return (
-    <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
+    <div
+      className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center"
+      style={{
+        backgroundImage: "url('src/assets/images/login1.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       <CContainer>
         <CRow className="justify-content-center">
           <CCol md={8}>
@@ -72,7 +80,7 @@ const Login = () => {
                     </CInputGroup>
                     <CRow>
                       <CCol xs={6}>
-                        <Link to="/Home">
+                        <Link to="/Home/Dashboard">
                           <CButton color="info" className="px-3">
                             Log in
                           </CButton>
@@ -91,7 +99,7 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              <CCard className="text-white bg-info py-5" style={{ width: '44%' }}>
+              <CCard className="text-white bg-info py-5">
                 <CCardBody className="text-center">
                   <div>
                     <h2 className="text-white">Sign up</h2>
@@ -172,8 +180,6 @@ const Login = () => {
             </CButton>
           </CModalFooter>
         </CModal>
-
-        <CModal visible={visibleSuccessModal}></CModal>
 
         <CModal visible={visibleSuccessModal} onClose={() => setVisibleSuccessModal(false)}>
           <CModalHeader>

@@ -106,7 +106,7 @@ export const Suppliers = () => {
 
   useEffect(() => {
     fetchSuppliers()
-    // Optional cleanup
+
     return () => {
       setSuppliers([])
     }
@@ -193,7 +193,6 @@ export const Suppliers = () => {
           </CTableBody>
         </CTable>
 
-        {/* Add Supplier Modal */}
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
             <CModalTitle>Add Supplier</CModalTitle>
@@ -240,7 +239,6 @@ export const Suppliers = () => {
           </CModalFooter>
         </CModal>
 
-        {/* Edit Supplier Modal */}
         <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
           <CModalHeader>
             <CModalTitle>Edit Supplier</CModalTitle>
@@ -287,7 +285,6 @@ export const Suppliers = () => {
           </CModalFooter>
         </CModal>
 
-        {/* Delete Supplier Modal */}
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
             <CModalTitle>Delete Supplier</CModalTitle>

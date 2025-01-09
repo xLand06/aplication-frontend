@@ -30,6 +30,7 @@ export const ClientList = () => {
   const [selectedClient, setSelectedClient] = useState(null)
   const [clients, setClients] = useState([])
   const [newClient, setNewClient] = useState({
+    id: '',
     firstName: '',
     lastName: '',
     clientId: '',
@@ -67,11 +68,7 @@ export const ClientList = () => {
   }
 
   const handleEditClient = async () => {
-    setClients(
-      clients.map((client) =>
-        client.clientId === selectedClient.clientId ? selectedClient : client,
-      ),
-    )
+    setClients(clients.map((client) => (client.id === selectedClient.id ? selectedClient : client)))
     try {
       await fetch(`http://localhost:5000/clients/${selectedClient?.id}`, {
         method: 'PUT',
@@ -84,7 +81,7 @@ export const ClientList = () => {
   }
 
   const handleDeleteClient = async () => {
-    setClients(clients.filter((client) => client.clientId !== selectedClient.clientId))
+    setClients(clients.filter((client) => client.id !== selectedClient.id))
     setVisibleDelete(false)
     try {
       await fetch(`http://localhost:5000/clients/${selectedClient.id}`, {
@@ -128,7 +125,7 @@ export const ClientList = () => {
             <CCol md={3}>
               <CFormInput
                 type="number"
-                placeholder="Filter by ID"
+                placeholder="Filter by Client ID"
                 value={filterId}
                 onChange={(e) => setFilterId(e.target.value)}
               />
@@ -144,6 +141,7 @@ export const ClientList = () => {
         <CTable hover responsive className="mt-4">
           <CTableHead>
             <CTableRow>
+              <CTableHeaderCell>ID</CTableHeaderCell>
               <CTableHeaderCell>First Name</CTableHeaderCell>
               <CTableHeaderCell>Last Name</CTableHeaderCell>
               <CTableHeaderCell>Client ID</CTableHeaderCell>
@@ -156,6 +154,7 @@ export const ClientList = () => {
           <CTableBody>
             {filteredClients.map((client, index) => (
               <CTableRow key={index}>
+                <CTableDataCell>{client.id}</CTableDataCell>
                 <CTableDataCell>{client.firstName}</CTableDataCell>
                 <CTableDataCell>{client.lastName}</CTableDataCell>
                 <CTableDataCell>{client.clientId}</CTableDataCell>
@@ -197,6 +196,12 @@ export const ClientList = () => {
             <CModalTitle>Add Client</CModalTitle>
           </CModalHeader>
           <CModalBody>
+            <CFormInput
+              placeholder="ID"
+              value={newClient.id}
+              onChange={(e) => setNewClient({ ...newClient, id: e.target.value })}
+              className="mb-3"
+            />
             <CFormInput
               placeholder="First Name"
               value={newClient.firstName}
@@ -250,6 +255,12 @@ export const ClientList = () => {
           </CModalHeader>
           <CModalBody>
             <CFormInput
+              placeholder="ID"
+              value={selectedClient?.id || ''}
+              onChange={(e) => setSelectedClient({ ...selectedClient, id: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
               placeholder="First Name"
               value={selectedClient?.firstName || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, firstName: e.target.value })}
@@ -298,11 +309,9 @@ export const ClientList = () => {
 
         <CModal visible={visibleDelete} onClose={() => setVisibleDelete(false)}>
           <CModalHeader>
-            <CModalTitle>Delete Client</CModalTitle>
+            <CModalTitle>Confirm Delete</CModalTitle>
           </CModalHeader>
-          <CModalBody>
-            Are you sure you want to delete {selectedClient?.firstName} {selectedClient?.lastName}?
-          </CModalBody>
+          <CModalBody>Are you sure you want to delete this client?</CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
@@ -316,5 +325,4 @@ export const ClientList = () => {
     </CCard>
   )
 }
-
 export default ClientList

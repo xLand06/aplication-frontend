@@ -30,8 +30,8 @@ export const Payments = () => {
   const [selectedPayment, setSelectedPayment] = useState(null)
   const [payments, setPayments] = useState([])
   const [newPayment, setNewPayment] = useState({
+    id: '',
     clientName: '',
-    paymentId: '',
     referenceNumber: '',
     amount: '',
     date: '',
@@ -49,14 +49,17 @@ export const Payments = () => {
     try {
       await fetch('http://localhost:5000/payments', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(newPayment),
       })
     } catch (error) {
       console.log('There was an error', error)
     }
     setNewPayment({
+      id: '',
       clientName: '',
-      paymentId: '',
       referenceNumber: '',
       amount: '',
       date: '',
@@ -67,12 +70,15 @@ export const Payments = () => {
   const handleEditPayment = async () => {
     setPayments(
       payments.map((payment) =>
-        payment.paymentId === selectedPayment.paymentId ? { ...selectedPayment } : payment,
+        payment.id === selectedPayment.id ? { ...selectedPayment } : payment,
       ),
     )
     try {
       await fetch(`http://localhost:5000/payments/${selectedPayment?.id}`, {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(selectedPayment),
       })
     } catch (error) {
@@ -142,8 +148,8 @@ export const Payments = () => {
         <CTable hover responsive className="mt-4">
           <CTableHead>
             <CTableRow>
+              <CTableHeaderCell>ID</CTableHeaderCell>
               <CTableHeaderCell>Client Name</CTableHeaderCell>
-              <CTableHeaderCell>Payment ID</CTableHeaderCell>
               <CTableHeaderCell>Reference Number</CTableHeaderCell>
               <CTableHeaderCell>Amount</CTableHeaderCell>
               <CTableHeaderCell>Date</CTableHeaderCell>
@@ -153,8 +159,8 @@ export const Payments = () => {
           <CTableBody>
             {filteredPayments.map((payment, index) => (
               <CTableRow key={index}>
+                <CTableDataCell>{payment.id}</CTableDataCell>
                 <CTableDataCell>{payment.clientName}</CTableDataCell>
-                <CTableDataCell>{payment.paymentId}</CTableDataCell>
                 <CTableDataCell>{payment.referenceNumber}</CTableDataCell>
                 <CTableDataCell>${payment.amount}</CTableDataCell>
                 <CTableDataCell>{payment.date}</CTableDataCell>
@@ -194,15 +200,15 @@ export const Payments = () => {
           </CModalHeader>
           <CModalBody>
             <CFormInput
-              placeholder="Client Name"
-              value={newPayment.clientName}
-              onChange={(e) => setNewPayment({ ...newPayment, clientName: e.target.value })}
+              placeholder="ID"
+              value={newPayment.id}
+              onChange={(e) => setNewPayment({ ...newPayment, id: e.target.value })}
               className="mb-3"
             />
             <CFormInput
-              placeholder="Payment ID"
-              value={newPayment.paymentId}
-              onChange={(e) => setNewPayment({ ...newPayment, paymentId: e.target.value })}
+              placeholder="Client Name"
+              value={newPayment.clientName}
+              onChange={(e) => setNewPayment({ ...newPayment, clientName: e.target.value })}
               className="mb-3"
             />
             <CFormInput
@@ -242,18 +248,16 @@ export const Payments = () => {
           </CModalHeader>
           <CModalBody>
             <CFormInput
+              placeholder="ID"
+              value={selectedPayment?.id}
+              onChange={(e) => setSelectedPayment({ ...selectedPayment, id: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
               placeholder="Client Name"
               value={selectedPayment?.clientName}
               onChange={(e) =>
                 setSelectedPayment({ ...selectedPayment, clientName: e.target.value })
-              }
-              className="mb-3"
-            />
-            <CFormInput
-              placeholder="Payment ID"
-              value={selectedPayment?.paymentId}
-              onChange={(e) =>
-                setSelectedPayment({ ...selectedPayment, paymentId: e.target.value })
               }
               className="mb-3"
             />
@@ -295,7 +299,8 @@ export const Payments = () => {
             <CModalTitle>Delete Payment</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            Are you sure you want to delete the payment made by {selectedPayment?.clientName}?
+            Are you sure you want to delete the payment with ID{' '}
+            <strong>{selectedPayment?.id}</strong>?
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>

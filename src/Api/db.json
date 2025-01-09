@@ -1,59 +1,133 @@
 {
   "users": [
     {
-      "id": "641f",
-      "firstName": "dgre",
-      "lastName": "fefe",
-      "userId": "",
-      "email": "",
-      "phone": "",
-      "role": "",
-      "status": ""
+      "id": "1",
+      "firstName": "Luis",
+      "lastName": "Landkoer ",
+      "userId": "31060856",
+      "email": "angellandkoer3@gmail.comm",
+      "phone": "04124388656",
+      "role": "Asistente",
+      "status": "Activo"
+    },
+    {
+      "id": "2",
+      "firstName": "Luis",
+      "lastName": "Santiago",
+      "userId": "34521325",
+      "email": "angellandkoer@gmail.com",
+      "phone": "04120473791",
+      "role": "Tecnico",
+      "status": "Activo"
+    },
+    {
+      "id": "3",
+      "firstName": "Jhoan",
+      "lastName": "Contreras",
+      "userId": "31060857",
+      "email": "sebastian@gmail.com",
+      "phone": "04149106789",
+      "role": "Asistente",
+      "status": "Activo"
+    },
+    {
+      "id": "4",
+      "firstName": "Jose ",
+      "lastName": "Landkoer",
+      "userId": "13110125",
+      "email": "joselandkoer@gmail.com",
+      "phone": "04247499030",
+      "role": "Tecnico",
+      "status": "Activo"
+    },
+    {
+      "id": "5",
+      "firstName": "Oneida",
+      "lastName": "Devia",
+      "userId": "12890124",
+      "email": "oneidadevia03@gmail.com",
+      "phone": "04247473539",
+      "role": "Tecnico",
+      "status": "Activo"
     }
   ],
   "clients": [
     {
       "id": "1",
-      "firstName": "Luisa",
-      "lastName": "Santiago",
-      "clientId": "3431030457",
-      "email": "santiago@gmail.com",
-      "phone": "0414",
-      "address": "Avenida"
+      "firstName": "Juan",
+      "lastName": "Rodriguez",
+      "clientId": "15230123",
+      "email": "Juanro1998@gmail.com",
+      "phone": "04128901245",
+      "address": "Av. Carabobo"
+    },
+    {
+      "id": "2",
+      "firstName": "Maria",
+      "lastName": "Moncada",
+      "clientId": "8123451",
+      "email": "mariam90@gmail.com",
+      "phone": "041689012347",
+      "address": "Av. Los Agustinos"
     }
   ],
   "repairs": [
     {
-      "id": "1",
-      "firstName": "Luisa",
-      "lastName": "Landkoera",
-      "userId": "31060856",
-      "email": "angellandkoer3@gmail.com",
-      "phone": "04147809010",
-      "role": "Tecnico",
-      "status": "Activo"
+      "id": "efe2",
+      "repairId": "1",
+      "model": "5656",
+      "clientName": "gff",
+      "brand": "fg",
+      "service": "gffgfg",
+      "technician": "hgghgh",
+      "price": "779",
+      "status": "En proceso",
+      "password": ""
     },
     {
-      "id": "32d",
-      "repairId": "12",
-      "model": "sdds",
-      "clientName": "csdcds",
-      "brand": "cdss",
-      "service": "cscsd",
-      "technician": "cscsd",
-      "price": "1229",
+      "id": "2903",
+      "repairId": "2",
+      "model": "dasasd",
+      "clientName": "sdassadasd",
+      "brand": "saddsa",
+      "service": "acsaccsaccsa",
+      "technician": "sadcascssdaacscsacas",
+      "price": "5",
       "status": "Reparado",
-      "password": "ada"
+      "password": ""
+    },
+    {
+      "id": "3120",
+      "repairId": "987798798789",
+      "model": "",
+      "clientName": "",
+      "brand": "",
+      "service": "",
+      "technician": "",
+      "price": 0,
+      "status": "",
+      "password": ""
+    },
+    {
+      "id": "81a7",
+      "repairId": "987897",
+      "model": "",
+      "clientName": "",
+      "brand": "",
+      "service": "",
+      "technician": "",
+      "price": 0,
+      "status": "En proceso",
+      "password": ""
     }
   ],
   "payments": [
     {
       "id": "1",
-      "clientName": "pablo parra",
-      "paymentId": "203243",
-      "referenceNumber": "131313",
-      "amount": "250",
-      "date": "24-10-2024"
+      "clientName": "Luis Landkoerr",
+      "referenceNumber": "12123",
+      "amount": "20",
+      "date": "2024-12-06"
     }
   ],
   "suppliers": [
@@ -67,6 +141,14 @@
     },
     {
       "id": "548d",
+      "supplierName": "",
+      "supplierId": "",
+      "email": "",
+      "phone": "",
+      "address": ""
+    },
+    {
+      "id": "a61b",
       "supplierName": "",
       "supplierId": "",
       "email": "",

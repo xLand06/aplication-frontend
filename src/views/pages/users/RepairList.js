@@ -43,11 +43,13 @@ export const RepairList = () => {
     password: '',
   })
 
-  const filteredRepairs = repairs.filter((repair) => {
+  const filteredRepairs = repairs?.filter((repair) => {
     return (
-      repair.repairId.includes(filterRepairId) &&
-      repair.model.toLowerCase().includes(filterModel.toLowerCase()) &&
-      repair.clientName.toLowerCase().includes(filterName.toLowerCase())
+      (repair.repairId?.includes(filterRepairId) || filterRepairId === '') &&
+      (repair.model ? repair.model.toLowerCase().includes(filterModel.toLowerCase()) : false) &&
+      (repair.clientName
+        ? repair.clientName.toLowerCase().includes(filterName.toLowerCase())
+        : false)
     )
   })
 
@@ -56,7 +58,8 @@ export const RepairList = () => {
     try {
       await fetch('http://localhost:5000/repairs', {
         method: 'POST',
-        body: JSON.stringify(newClient),
+
+        body: JSON.stringify(newRepair),
       })
     } catch (error) {
       console.log('There was an error:', error)
@@ -82,8 +85,11 @@ export const RepairList = () => {
       ),
     )
     try {
-      await fetch(`http://localhost:5000/repairs/${selectedRepair?.id}`, {
+      await fetch(`http://localhost:5000/repairs/${selectedRepair?.repairId}`, {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(selectedRepair),
       })
     } catch (error) {
@@ -97,7 +103,7 @@ export const RepairList = () => {
     setRepairs(repairs.filter((repair) => repair.repairId !== selectedRepair.repairId))
     setVisibleDelete(false)
     try {
-      await fetch(`http://localhost:5000/repairs/${selectedRepair.id}`, {
+      await fetch(`http://localhost:5000/repairs/${selectedRepair.repairId}`, {
         method: 'DELETE',
       })
     } catch (error) {
@@ -105,11 +111,12 @@ export const RepairList = () => {
     }
     setSelectedRepair(null)
   }
+
   const fetchRepairs = async () => {
     try {
       const response = await fetch('http://localhost:5000/repairs')
       const data = await response.json()
-      setClients(data)
+      setRepairs(data)
     } catch (error) {
       console.error('Error fetching repairs:', error)
     }
@@ -174,7 +181,7 @@ export const RepairList = () => {
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {filteredRepairs.map((repair, index) => (
+            {filteredRepairs?.map((repair, index) => (
               <CTableRow key={index}>
                 <CTableDataCell>{repair.repairId}</CTableDataCell>
                 <CTableDataCell>{repair.model}</CTableDataCell>
@@ -185,12 +192,13 @@ export const RepairList = () => {
                 <CTableDataCell>${repair.price}</CTableDataCell>
                 <CTableDataCell>
                   <CFormSelect
-                    value={repair.status}
+                    value={repair?.status}
                     onChange={(e) => setSelectedRepair({ ...repair, status: e.target.value })}
                   >
-                    <option value="En proceso">En proceso</option>
-                    <option value="Reparado">Reparado</option>
-                    <option value="Entregado">Entregado</option>
+                    <option value="">Select Status</option>
+                    <option value="En proceso">In Progress</option>
+                    <option value="Reparado">Repaired</option>
+                    <option value="Entregado">Delivered</option>
                   </CFormSelect>
                 </CTableDataCell>
                 <CTableDataCell>
@@ -228,26 +236,66 @@ export const RepairList = () => {
             <CModalTitle>Add Repair</CModalTitle>
           </CModalHeader>
           <CModalBody>
-            <CFormInput placeholder="Repair ID" className="mb-3" />
-            <CFormInput placeholder="Model" className="mb-3" />
-            <CFormInput placeholder="Brand" className="mb-3" />
-            <CFormInput placeholder="Client Name" className="mb-3" />
-            <CFormInput placeholder="Service" className="mb-3" />
-            <CFormInput placeholder="Technician" className="mb-3" />
-            <CFormInput placeholder="Price" className="mb-3" type="number" />
-            <CFormSelect className="mb-3">
+            <CFormInput
+              placeholder="Repair ID"
+              value={newRepair.repairId}
+              onChange={(e) => setNewRepair({ ...newRepair, repairId: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Model"
+              value={newRepair.model}
+              onChange={(e) => setNewRepair({ ...newRepair, model: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Brand"
+              value={newRepair.brand}
+              onChange={(e) => setNewRepair({ ...newRepair, brand: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Client Name"
+              value={newRepair.clientName}
+              onChange={(e) => setNewRepair({ ...newRepair, clientName: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Service"
+              value={newRepair.service}
+              onChange={(e) => setNewRepair({ ...newRepair, service: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Technician"
+              value={newRepair.technician}
+              onChange={(e) => setNewRepair({ ...newRepair, technician: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Price"
+              type="number"
+              value={newRepair.price}
+              onChange={(e) => setNewRepair({ ...newRepair, price: e.target.value })}
+              className="mb-3"
+            />
+            <CFormSelect
+              value={newRepair.status}
+              onChange={(e) => setNewRepair({ ...newRepair, status: e.target.value })}
+              className="mb-3"
+            >
+              <option value="">Select Status</option>
               <option value="En proceso">In Progress</option>
               <option value="Reparado">Repaired</option>
               <option value="Entregado">Delivered</option>
             </CFormSelect>
-            <CFormInput placeholder="Password" className="mb-3" />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={handleAdd}>
-              Save
+            <CButton color="primary" onClick={handleAdd}>
+              Add Repair
             </CButton>
           </CModalFooter>
         </CModal>
@@ -259,31 +307,45 @@ export const RepairList = () => {
           <CModalBody>
             <CFormInput
               placeholder="Repair ID"
-              defaultValue={selectedRepair?.repairId}
+              value={selectedRepair?.repairId}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, repairId: e.target.value })}
               className="mb-3"
             />
-            <CFormInput placeholder="Model" defaultValue={selectedRepair?.model} className="mb-3" />
-            <CFormInput placeholder="Brand" defaultValue={selectedRepair?.brand} className="mb-3" />
+            <CFormInput
+              placeholder="Model"
+              value={selectedRepair?.model}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, model: e.target.value })}
+              className="mb-3"
+            />
+            <CFormInput
+              placeholder="Brand"
+              value={selectedRepair?.brand}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, brand: e.target.value })}
+              className="mb-3"
+            />
             <CFormInput
               placeholder="Client Name"
-              defaultValue={selectedRepair?.clientName}
+              value={selectedRepair?.clientName}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, clientName: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Service"
-              defaultValue={selectedRepair?.service}
+              value={selectedRepair?.service}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, service: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Technician"
-              defaultValue={selectedRepair?.technician}
+              value={selectedRepair?.technician}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, technician: e.target.value })}
               className="mb-3"
             />
             <CFormInput
               placeholder="Price"
-              defaultValue={selectedRepair?.price}
+              value={selectedRepair?.price}
+              onChange={(e) => setSelectedRepair({ ...selectedRepair, price: e.target.value })}
               className="mb-3"
-              type="number"
             />
             <CFormSelect
               value={selectedRepair?.status}
@@ -294,18 +356,13 @@ export const RepairList = () => {
               <option value="Reparado">Repaired</option>
               <option value="Entregado">Delivered</option>
             </CFormSelect>
-            <CFormInput
-              placeholder="Password"
-              defaultValue={selectedRepair?.password}
-              className="mb-3"
-            />
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={handleEdit}>
-              Save
+            <CButton color="primary" onClick={handleEdit}>
+              Save Changes
             </CButton>
           </CModalFooter>
         </CModal>

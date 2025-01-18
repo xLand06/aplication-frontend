@@ -2,7 +2,7 @@
   "users": [
     {
       "id": "1",
-      "firstName": "Luis",
+      "firstName": "Luisa",
       "lastName": "Landkoer ",
       "userId": "31060856",
       "email": "angellandkoer3@gmail.comm",
@@ -28,26 +28,6 @@
       "email": "sebastian@gmail.com",
       "phone": "04149106789",
       "role": "Asistente",
-      "status": "Activo"
-    },
-    {
-      "id": "4",
-      "firstName": "Jose ",
-      "lastName": "Landkoer",
-      "userId": "13110125",
-      "email": "joselandkoer@gmail.com",
-      "phone": "04247499030",
-      "role": "Tecnico",
-      "status": "Activo"
-    },
-    {
-      "id": "5",
-      "firstName": "Oneida",
-      "lastName": "Devia",
-      "userId": "12890124",
-      "email": "oneidadevia03@gmail.com",
-      "phone": "04247473539",
-      "role": "Tecnico",
       "status": "Activo"
     }
   ],

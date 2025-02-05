@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { helpFetch } from '../../../Api/HelpFetch.js'
 import {
   CCard,
   CButton,
@@ -21,7 +22,10 @@ import {
   CModalTitle,
 } from '@coreui/react'
 
+
+const api = helpFetch ();
 export const ClientList = () => {
+
   const [filterName, setFilterName] = useState('')
   const [filterId, setFilterId] = useState('')
   const [visibleAdd, setVisibleAdd] = useState(false)
@@ -30,88 +34,94 @@ export const ClientList = () => {
   const [selectedClient, setSelectedClient] = useState(null)
   const [clients, setClients] = useState([])
   const [newClient, setNewClient] = useState({
-    id: '',
-    firstName: '',
-    lastName: '',
-    clientId: '',
+    client_id: '',
+    first_name: '',
+    last_name: '',
+    clients_id: '',
     email: '',
     phone: '',
     address: '',
   })
 
+  
   const filteredClients = clients.filter((client) => {
     return (
-      client.firstName.toLowerCase().includes(filterName.toLowerCase()) &&
-      client.clientId.includes(filterId)
+      client.first_name?.toLowerCase().includes(filterName.toLowerCase()) &&
+      client.clients_id?.includes(filterId)
     )
   })
+ 
 
-  const handleAddClient = async () => {
-    setClients([...clients, newClient])
-    try {
-      await fetch('http://localhost:5000/clients', {
-        method: 'POST',
-        body: JSON.stringify(newClient),
-      })
-    } catch (error) {
-      console.log('There was an error:', error)
-    }
-    setNewClient({
-      firstName: '',
-      lastName: '',
-      clientId: '',
-      email: '',
-      phone: '',
-      address: '',
+  const addClients = () => {
+    api.post('clients', { body: newClient }).then((response) => {
+      if (!response.error) {
+        setNewClient({
+          first_name: '',
+          last_name: '',
+          clients_id: '',
+          email: '',
+          phone: '',
+          address: '',
+        })
+        fetchClients()
+      }
     })
-    setVisibleAdd(false)
   }
+  
+  const handleInputChange = (e) => {
+    const { id, value } = e.target
+    setNewClient({
+      ...newClient,
+      [id]: value,
+})
+ }
+  
+  
 
-  const handleEditClient = async () => {
-    setClients(clients.map((client) => (client.id === selectedClient.id ? selectedClient : client)))
-    try {
-      await fetch(`http://localhost:5000/clients/${selectedClient?.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(selectedClient),
-      })
-    } catch (error) {
-      console.log('There was an error:', error)
+  const editClients = async (client) => {
+    const options = {
+      body: client
     }
-    setVisibleEdit(false)
+    await api.put('clients',options,client.client_id).then((data) => {
+      if (!data.error){
+        fetchClients()
+      }}
+    )
   }
 
-  const handleDeleteClient = async () => {
-    setClients(clients.filter((client) => client.id !== selectedClient.id))
-    setVisibleDelete(false)
-    try {
-      await fetch(`http://localhost:5000/clients/${selectedClient.id}`, {
-        method: 'DELETE',
-      })
-    } catch (error) {
-      console.log('Error requested: ', error)
-    }
-  }
-
-  const fetchClients = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/clients')
-      const data = await response.json()
-      setClients(data)
-    } catch (error) {
-      console.error('Error fetching clients:', error)
+  
+ const deleteClients = async (client) => { 
+  await api.delet ('clients',client.client_id).then((response) => {
+    if (!response.error){
+      fetchClients()
     }
   }
+)
+ }
 
-  useEffect(() => {
-    fetchClients()
-  }, [])
+ const fetchClients = () => {
+  api.get('clients').then((data) => {
+    console.log('Fetched Data:', data); // Agrega un console.log para ver qué llega
+    if (!data.error) {
+      setClients(data.clients);
+    } else {
+      console.error('Error fetching clients or invalid data format:', data);
+    }
+  });
+};
+
+
+useEffect(() => {
+  fetchClients()
+}, [clients])
+
 
   return (
     <CCard className="mb-4">
       <CCardHeader>
         <h4 className="mb-0">Clients</h4>
       </CCardHeader>
-      <CCardBody>
+        <CCardBody>
         <CForm className="mb-4">
           <CRow className="g-3">
             <CCol md={3}>
@@ -154,10 +164,10 @@ export const ClientList = () => {
           <CTableBody>
             {filteredClients.map((client, index) => (
               <CTableRow key={index}>
-                <CTableDataCell>{client.id}</CTableDataCell>
-                <CTableDataCell>{client.firstName}</CTableDataCell>
-                <CTableDataCell>{client.lastName}</CTableDataCell>
-                <CTableDataCell>{client.clientId}</CTableDataCell>
+                <CTableDataCell>{client.client_id}</CTableDataCell>
+                <CTableDataCell>{client.first_name}</CTableDataCell>
+                <CTableDataCell>{client.last_name}</CTableDataCell>
+                <CTableDataCell>{client.clients_id}</CTableDataCell>
                 <CTableDataCell>{client.email}</CTableDataCell>
                 <CTableDataCell>{client.phone}</CTableDataCell>
                 <CTableDataCell>{client.address}</CTableDataCell>
@@ -191,106 +201,139 @@ export const ClientList = () => {
           </CTableBody>
         </CTable>
 
+   
         <CModal visible={visibleAdd} onClose={() => setVisibleAdd(false)}>
           <CModalHeader>
             <CModalTitle>Add Client</CModalTitle>
           </CModalHeader>
           <CModalBody>
+          <CForm onSubmit={addClients}>
+            
+            
+            <label htmlFor="Enter ID" className="form-label">Enter Client ID</label>
             <CFormInput
-              placeholder="ID"
-              value={newClient.id}
-              onChange={(e) => setNewClient({ ...newClient, id: e.target.value })}
-              className="mb-3"
-            />
-            <CFormInput
-              placeholder="First Name"
-              value={newClient.firstName}
-              onChange={(e) => setNewClient({ ...newClient, firstName: e.target.value })}
-              className="mb-3"
-            />
-            <CFormInput
-              placeholder="Last Name"
-              value={newClient.lastName}
-              onChange={(e) => setNewClient({ ...newClient, lastName: e.target.value })}
-              className="mb-3"
-            />
-            <CFormInput
+              id="id"
               placeholder="Client ID"
-              value={newClient.clientId}
-              onChange={(e) => setNewClient({ ...newClient, clientId: e.target.value })}
+              value={newClient.client_id}
+              onChange={handleInputChange}
               className="mb-3"
             />
+            <label htmlFor="Enter firstName" className="form-label">Enter First Name</label>
             <CFormInput
-              placeholder="Email"
+              id="firstName"
+              placeholder="First Name"
+              value={newClient.first_name}
+              onChange={handleInputChange}
+              className="mb-3"
+            />
+            <label htmlFor="Enter LastName" className="form-label">Enter Last Name</label>
+            <CFormInput
+              id="lastName"
+              placeholder="Last Name"
+              value={newClient.last_name}
+              onChange={handleInputChange}
+              className="mb-3"
+            />
+             <label htmlFor="Idendity Card" className="form-label">Enter Idendity Card</label>
+             <CFormInput
+              id="clients_id"
+              placeholder="Client ID"
+              value={newClient.clients_id}
+              onChange={handleInputChange}
+              className="mb-3"
+            />
+            <label htmlFor="email" className="form-label">Enter Email</label>
+            <CFormInput
+              id="email"
+              placeholder="surname@example.com"
               value={newClient.email}
-              onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+              onChange={handleInputChange}
               className="mb-3"
             />
+            <label htmlFor="phone" className="form-label">Enter Phone</label>
             <CFormInput
+              id="phone"
               placeholder="Phone"
               value={newClient.phone}
-              onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+              onChange={handleInputChange}
               className="mb-3"
             />
+            <label htmlFor="address" className="form-label">Enter Address</label>
             <CFormInput
+              id="address"
               placeholder="Address"
               value={newClient.address}
-              onChange={(e) => setNewClient({ ...newClient, address: e.target.value })}
+              onChange={handleInputChange}
               className="mb-3"
             />
+          </CForm>
           </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleAdd(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={handleAddClient}>
+            <CButton color="info" onClick={addClients}>
               Save
             </CButton>
           </CModalFooter>
         </CModal>
 
-        <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
+            <CModal visible={visibleEdit} onClose={() => setVisibleEdit(false)}>
           <CModalHeader>
             <CModalTitle>Edit Client</CModalTitle>
           </CModalHeader>
           <CModalBody>
+          <label htmlFor="clientId" className="form-label">Enter Client ID</label>
             <CFormInput
-              placeholder="ID"
-              value={selectedClient?.id || ''}
+              id="clientId"
+              placeholder="Client ID"
+              value={selectedClient?.id || '' } 
               onChange={(e) => setSelectedClient({ ...selectedClient, id: e.target.value })}
               className="mb-3"
             />
+            <label htmlFor="editFirstName" className="form-label">Enter First Name</label>
             <CFormInput
+              id="editFirstName"
               placeholder="First Name"
-              value={selectedClient?.firstName || ''}
+              value={selectedClient?.first_name || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, firstName: e.target.value })}
               className="mb-3"
             />
+            <label htmlFor="editLastName" className="form-label">Enter Last Name</label>
             <CFormInput
+              id="editLastName"
               placeholder="Last Name"
-              value={selectedClient?.lastName || ''}
+              value={selectedClient?.last_name || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, lastName: e.target.value })}
               className="mb-3"
             />
-            <CFormInput
+             <label htmlFor="Idendity Card" className="form-label">Enter Idendity Card</label>
+             <CFormInput
+              id="clientId"
               placeholder="Client ID"
-              value={selectedClient?.clientId || ''}
+              value={selectedClient?.clients_id|| ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, clientId: e.target.value })}
               className="mb-3"
             />
+            <label htmlFor="editEmail" className="form-label">Enter Email</label>
             <CFormInput
-              placeholder="Email"
+              id="editEmail"
+              placeholder="surname@example.com"
               value={selectedClient?.email || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, email: e.target.value })}
               className="mb-3"
             />
+            <label htmlFor="editPhone" className="form-label">Enter Phone</label>
             <CFormInput
+              id="editPhone"
               placeholder="Phone"
               value={selectedClient?.phone || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, phone: e.target.value })}
               className="mb-3"
             />
+            <label htmlFor="editAddress" className="form-label">Enter Address</label>
             <CFormInput
+              id="editAddress"
               placeholder="Address"
               value={selectedClient?.address || ''}
               onChange={(e) => setSelectedClient({ ...selectedClient, address: e.target.value })}
@@ -301,7 +344,7 @@ export const ClientList = () => {
             <CButton color="secondary" onClick={() => setVisibleEdit(false)}>
               Cancel
             </CButton>
-            <CButton color="info" onClick={handleEditClient}>
+            <CButton color="info" onClick={() => {editClients(selectedClient);setVisibleEdit(false) }}>
               Save
             </CButton>
           </CModalFooter>
@@ -311,12 +354,18 @@ export const ClientList = () => {
           <CModalHeader>
             <CModalTitle>Confirm Delete</CModalTitle>
           </CModalHeader>
-          <CModalBody>Are you sure you want to delete this client?</CModalBody>
+          <CModalBody>
+            {selectedClient ? (
+              <p>Are you sure you want to delete this client?</p>
+            ) : (
+              <p>No client selected.</p>
+            )}
+          </CModalBody>
           <CModalFooter>
             <CButton color="secondary" onClick={() => setVisibleDelete(false)}>
               Cancel
             </CButton>
-            <CButton color="danger" onClick={handleDeleteClient}>
+            <CButton color="danger" onClick={() => {deleteClients (selectedClient); setVisibleDelete(false)}}>
               Delete
             </CButton>
           </CModalFooter>
@@ -325,4 +374,5 @@ export const ClientList = () => {
     </CCard>
   )
 }
+
 export default ClientList

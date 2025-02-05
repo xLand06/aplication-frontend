@@ -2,138 +2,78 @@
   "users": [
     {
       "id": "1",
-      "firstName": "Luisa",
-      "lastName": "Landkoer ",
-      "userId": "31060856",
-      "email": "angellandkoer3@gmail.comm",
-      "phone": "04124388656",
-      "role": "Asistente",
-      "status": "Activo"
-    },
-    {
-      "id": "2",
       "firstName": "Luis",
-      "lastName": "Santiago",
-      "userId": "34521325",
-      "email": "angellandkoer@gmail.com",
-      "phone": "04120473791",
+      "lastName": "Landkoer",
+      "userId": "31060856",
+      "email": "angellandkoer3@gmail.com",
+      "phone": "04247453502",
       "role": "Tecnico",
-      "status": "Activo"
-    },
-    {
-      "id": "3",
-      "firstName": "Carlos",
-      "lastName": "Contreras",
-      "userId": "31060857",
-      "email": "sebastian@gmail.com",
-      "phone": "04149106789",
-      "role": "Asistente",
       "status": "Activo"
     }
   ],
   "clients": [
     {
       "id": "1",
-      "firstName": "Juan",
-      "lastName": "Rodriguez",
-      "clientId": "15230123",
-      "email": "Juanro1998@gmail.com",
-      "phone": "04128901245",
-      "address": "Av. Carabobo"
-    },
-    {
-      "id": "2",
-      "firstName": "Maria",
-      "lastName": "Moncada",
-      "clientId": "8123451",
-      "email": "mariam90@gmail.com",
-      "phone": "041689012347",
-      "address": "Av. Los Agustinos"
+      "firstName": "Shaiel",
+      "lastName": "Becerra",
+      "clientId": "31450450",
+      "email": "shaiel@gmail.com",
+      "phone": "04247604243",
+      "address": "Michelena"
     }
   ],
   "repairs": [
     {
-      "id": "efe2",
-      "repairId": "1",
-      "model": "5656",
-      "clientName": "gff",
-      "brand": "fg",
-      "service": "gffgfg",
-      "technician": "hgghgh",
-      "price": "779",
-      "status": "En proceso",
-      "password": ""
-    },
-    {
-      "id": "2903",
-      "repairId": "2",
-      "model": "dasasd",
-      "clientName": "sdassadasd",
-      "brand": "saddsa",
-      "service": "acsaccsaccsa",
-      "technician": "sadcascssdaacscsacas",
-      "price": "5",
-      "status": "Reparado",
-      "password": ""
-    },
-    {
-      "id": "3120",
-      "repairId": "987798798789",
-      "model": "",
-      "clientName": "",
-      "brand": "",
-      "service": "",
-      "technician": "",
-      "price": 0,
-      "status": "",
-      "password": ""
-    },
-    {
-      "id": "81a7",
-      "repairId": "987897",
-      "model": "",
-      "clientName": "",
-      "brand": "",
-      "service": "",
-      "technician": "",
-      "price": 0,
-      "status": "En proceso",
-      "password": ""
+      "id": "1",
+      "userId": "31060856",
+      "clientId": "31060856",
+      "brand": "Tecno ",
+      "model": "Camon 18P",
+      "imei": "123312345543",
+      "password": "123456",
+      "estatus": "In Progress",
+      "date": "2025-01-30",
+      "observations": "aja",
+      "repairedPart": "pantalla",
+      "status": "in progress"
     }
   ],
   "payments": [
     {
       "id": "1",
-      "clientName": "Luis Landkoerr",
-      "referenceNumber": "12123",
-      "amount": "20",
-      "date": "2024-12-06"
+      "repairId": null,
+      "clientId": "23432432",
+      "clientName": "Shaiel",
+      "referenceNumber": "2432432",
+      "paymentMethod": "Cash",
+      "amount": "25",
+      "date": "2025-01-13T15:13",
+      "descriptions": "Pago"
     }
   ],
   "suppliers": [
     {
-      "id": "2",
-      "supplierName": "Canguro",
-      "supplierId": "01",
-      "email": "canguro@gmail.com",
-      "phone": "0424789722",
-      "address": "Avenida 2"
-    },
+      "id": "1",
+      "supplierName": "Canguro C.A",
+      "email": "cangurove@gmail.com",
+      "phone": "02763536898",
+      "address": "Centro Civico"
+    }
+  ],
+  "inventory": [
     {
-      "id": "548d",
-      "supplierName": "",
-      "supplierId": "",
-      "email": "",
-      "phone": "",
-      "address": ""
-    },
+      "id": "1",
+      "supplierId": "1233",
+      "modelName": "barcelona2004",
+      "partType": "Bateria",
+      "quantity": "023123",
+      "amount": "12"
+    }
+  ],
+  "partTypes": [
     {
-      "id": "a61b",
-      "supplierName": "",
-      "supplierId": "",
-      "email": "",
-      "phone": "",
-      "address": ""
+      "id": "135b",
+      "partName": "Pantalla"
     }
   ]
 }
